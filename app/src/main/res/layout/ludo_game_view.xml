@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/top_gui_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <RatingBar
+        android:id="@+id/ratingBar3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/Player4_ID"
+        android:layout_alignParentStart="true"
+        android:max="4"
+        android:minHeight="30dp"
+        android:minWidth="100dp"
+        android:numStars="4"
+        android:rating="2" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ratingBar"
+        android:layout_toStartOf="@+id/Player1_ID"
+        android:text="Roll" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ratingBar3"
+        android:layout_toEndOf="@+id/ratingBar3"
+        android:text="Roll" />
+
+    <RatingBar
+        android:id="@+id/ratingBar2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/Player3_ID"
+        android:max="4"
+        android:minHeight="30dp"
+        android:minWidth="100dp"
+        android:numStars="4"
+        android:rating="2" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ratingBar2"
+        android:layout_toEndOf="@+id/ratingBar2"
+        android:text="Roll" />
+
+    <edu_up_cs301.ludo.DrawBoard
+        android:id="@+id/board_canvas"
+        android:layout_width="1426dp"
+        android:layout_height="1426dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="88dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="88dp"
+        android:fitsSystemWindows="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintTop_creator="1" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Player2_ID"
+        android:layout_toStartOf="@+id/ratingBar4"
+        android:text="Roll" />
+
+    <TextView
+        android:id="@+id/Player1_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/ratingBar"
+        android:gravity="end"
+        android:text="Player 4"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/Player2_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/ratingBar2"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:maxHeight="50dp"
+        android:minHeight="30dp"
+        android:text="Player2"
+        android:textSize="24sp"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/Player3_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/ratingBar4"
+        android:gravity="end"
+        android:maxHeight="100dp"
+        android:maxWidth="100dp"
+        android:text="Player3"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/Player4_ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/ratingBar3"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="Player1"
+        android:textSize="24sp" />
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/Player1_ID"
+        android:layout_alignParentEnd="true"
+        android:max="4"
+        android:minHeight="30dp"
+        android:minWidth="100dp"
+        android:numStars="4"
+        android:rating="2"
+        android:scaleX="-1" />
+
+    <RatingBar
+        android:id="@+id/ratingBar4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/ratingBar2"
+        android:clickable="false"
+        android:max="4"
+        android:minHeight="30dp"
+        android:minWidth="100dp"
+        android:numStars="4"
+        android:rating="2"
+        android:scaleX="-1" />
+
+</RelativeLayout>
