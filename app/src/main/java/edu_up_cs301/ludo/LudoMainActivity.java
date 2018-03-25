@@ -30,7 +30,7 @@ public class LudoMainActivity extends GameMainActivity {
         ArrayList<GamePlayerType> playerTypes = new ArrayList<GamePlayerType>();
 
         // Pig has two player types:  human and computer
-        playerTypes.add(new GamePlayerType("Local Human Player") {
+        playerTypes.add(new GamePlayerType("Local Human") {
             public GamePlayer createPlayer(String name) {
                 return new HumanPlayer(name);
             }});
@@ -41,7 +41,7 @@ public class LudoMainActivity extends GameMainActivity {
 //                return new ComputerSmartPlayer(name);
 //            }});
 
-        playerTypes.add(new GamePlayerType("Computer Player") {
+        playerTypes.add(new GamePlayerType("Computer Easy") {
             public GamePlayer createPlayer(String name) {
                 return new ComputerPlayer(name);
             }});

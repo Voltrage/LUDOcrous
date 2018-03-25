@@ -97,8 +97,8 @@ public class LudoState extends GameState {
      * getter method for score
      * @return score array
      */
-    public int[] getPlayerScore(){
-        return playerScore;
+    public int getPlayerScore(int index){
+        return playerScore[index];
     }
 
     /**
@@ -197,7 +197,6 @@ public class LudoState extends GameState {
     /**
      * getter method to search for peice by reference to distance traveled
      *
-     //     * @param playerID
      * @param spacesTraveled
      * @return
      */
@@ -342,10 +341,10 @@ public class LudoState extends GameState {
             //piece selected needs to be moved out to start.
             if (pieces[indexOfCurrentToken].getIsHome()) {
                 pieces[indexOfCurrentToken].setIsHome(false);
+                return true;
             }
-            else {
-                pieces[indexOfCurrentToken].incNumSpacesMoved(diceVal);
-            }
+
+            pieces[indexOfCurrentToken].incNumSpacesMoved(diceVal);
 
             spacesPieceHasTraveled = pieces[indexOfCurrentToken].getNumSpacesMoved();
 
@@ -401,8 +400,6 @@ public class LudoState extends GameState {
 
         return output;
     }
-
-
 
 
 }

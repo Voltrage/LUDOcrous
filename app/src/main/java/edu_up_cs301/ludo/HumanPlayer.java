@@ -1,6 +1,9 @@
 package edu_up_cs301.ludo;
 
+import android.graphics.Color;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,11 +13,14 @@ import edu_up_cs301.game.GameMainActivity;
 import edu_up_cs301.game.R;
 import edu_up_cs301.game.actionMsg.GameAction;
 import edu_up_cs301.game.infoMsg.GameInfo;
+import edu_up_cs301.game.infoMsg.IllegalMoveInfo;
 import edu_up_cs301.game.infoMsg.NotYourTurnInfo;
 
 /**
  * contains gui
  * Created by Luke on 2/26/2018.
+ *
+ * TODO: everybody needs access to pieces, but only a copy of them,
  */
 
 public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener, View.OnTouchListener {
@@ -23,6 +29,7 @@ public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener
     private static final long serialVersionUID = 3548793282648392873L;
 
 
+    LudoSurfaceView surfaceView;
 
     private EditText testString;
     private Button runTest;
@@ -100,6 +107,96 @@ public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener
         }
     }
 
+    /**
+     * Sets this player as the one attached to the GUI. Saves the
+     * activity, links listeners to IO to invoke specific methods.
+     */
+    @Override
+    public void setAsGui(GameMainActivity activity) {
+        //remember the activity
+        myActivity = activity;
+
+//        activity.setContentView(R.layout.test);
+        activity.setContentView(R.layout.ludo_game_view);
+
+        //find references
+        surfaceView = (LudoSurfaceView) activity.findViewById(R.id.board_canvas);
+//        runTest     = (Button) activity.findViewById(R.id.test_button);
+//        testString  = (EditText) activity.findViewById(R.id.TestString);
+
+        //attach listener
+//        runTest.setOnClickListener(this);
+        surfaceView.setOnTouchListener(this);
+
+
+
+    }
+
+    @Override
+    public View getTopView() {
+        return myActivity.findViewById(R.id.top_gui_layout);
+    }
+
+    /**
+     * Callback method, called when player gets a message
+     *
+     * @param info
+     * 		the message
+     */
+    @Override
+    public void receiveInfo(GameInfo info) {
+
+        if (surfaceView == null) return;
+
+
+        if (info instanceof IllegalMoveInfo || info instanceof NotYourTurnInfo) {
+            // if the move was out of turn or otherwise illegal, flash the screen
+            surfaceView.flash(Color.RED, 50);
+        }
+        else if (!(info instanceof LudoState))
+            // if we do not have a TTTState, ignore
+            return;
+        else {
+//            surfaceView.setState((LudoState)info);
+            state = (LudoState)info;
+            surfaceView.invalidate();
+            Log.i("human player", "receiving");
+        }
+
+        if(info instanceof NotYourTurnInfo){
+            this.flash(Color.RED, 50);
+        }
+
+
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        float cell_row = event.getX();
+        float cell_col = event.getY();
+
+        //TODO: turn into valid row and col values for board, also if within SurfaceView
+        int row = 0;
+        int col = 0;
+
+        int index = 0;
+
+        //create instance of gameAction
+        GameAction action = null;
+
+        switch(v.getId()){
+            case R.id.board_canvas: // if surfaceView is pressed, tell the game
+                state.newRoll();
+                action = new ActionMoveToken(this, index);
+                game.sendAction(action);
+                return true;
+        }
+
+
+
+        return false;
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -140,64 +237,6 @@ public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener
 
         }
 
-    }
-
-    @Override
-    public void setAsGui(GameMainActivity activity) {
-        //remember the activity
-        myActivity = activity;
-
-        activity.setContentView(R.layout.test);
-
-        //find references
-        runTest     = (Button)activity.findViewById(R.id.test_button);
-        testString  = (EditText)activity.findViewById(R.id.TestString);
-
-        //attach listener
-        runTest.setOnClickListener(this);
-
-
-
-    }
-
-    @Override
-    public View getTopView() {
-        return myActivity.findViewById(R.id.top_gui_layout);
-    }
-
-    @Override
-    public void receiveInfo(GameInfo info) {
-
-        if (info instanceof NotYourTurnInfo) { return; }
-
-    }
-
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        float cell_row = event.getX();
-        float cell_col = event.getY();
-
-        //TODO: turn into valid row and col values for board, also if within SurfaceView
-        int row = 0;
-        int col = 0;
-
-        int index = 0;
-
-        //create instance of gameAction
-        GameAction action = null;
-
-        switch(v.getId()){
-            case R.id.board_canvas: // if surfaceView is pressed, tell the game
-                state.newRoll();
-                action = new ActionMoveToken(this, index);
-                game.sendAction(action);
-                return true;
-        }
-
-
-
-        return false;
     }
 
 }

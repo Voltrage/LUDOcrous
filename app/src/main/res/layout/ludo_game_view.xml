@@ -21,7 +21,7 @@
         android:rating="2" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/RollP4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/ratingBar"
@@ -29,7 +29,7 @@
         android:text="Roll" />
 
     <Button
-        android:id="@+id/button6"
+        android:id="@+id/RollP1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/ratingBar3"
@@ -49,14 +49,14 @@
         android:rating="2" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/RollP2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/ratingBar2"
         android:layout_toEndOf="@+id/ratingBar2"
         android:text="Roll" />
 
-    <edu_up_cs301.ludo.DrawBoard
+    <edu_up_cs301.ludo.LudoSurfaceView
         android:id="@+id/board_canvas"
         android:layout_width="1426dp"
         android:layout_height="1426dp"
@@ -74,7 +74,7 @@
         tools:layout_constraintTop_creator="1" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/RollP3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/Player2_ID"

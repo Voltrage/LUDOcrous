@@ -57,15 +57,13 @@ public class LudoLocalGame extends LocalGame {
      */
     @Override
     protected String checkIfGameOver() {
-        int[] scores = state.getPlayerScore();
         for(int i = 0 ; i < state.getNumPlayers() ; i++) {
-            if(scores[i] == 4){
+            if(state.getPlayerScore(i) == 4){
                 return "Congrats!" + playerNames[i] + " wins!!!";
             }
         }
         return null;
     }
-
 
     @Override
     protected boolean makeMove(GameAction action) {

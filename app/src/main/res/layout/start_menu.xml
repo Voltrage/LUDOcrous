@@ -51,7 +51,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/spinner2"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="@+id/button3"
+        app:layout_constraintLeft_toLeftOf="@+id/RollP3"
         app:layout_constraintRight_toLeftOf="@+id/spinner2"
         app:layout_constraintTop_toTopOf="@+id/spinner2"
         app:layout_constraintVertical_bias="0.0"
@@ -67,7 +67,7 @@
         android:layout_marginLeft="58dp"
         android:layout_marginStart="58dp"
         android:layout_marginTop="190dp"
-        app:layout_constraintLeft_toRightOf="@+id/button3"
+        app:layout_constraintLeft_toRightOf="@+id/RollP3"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintTop_creator="1" />
@@ -93,16 +93,16 @@
         android:layout_marginEnd="6dp"
         android:layout_marginRight="6dp"
         android:text="Yellow"
-        app:layout_constraintBaseline_toBaselineOf="@+id/button4"
+        app:layout_constraintBaseline_toBaselineOf="@+id/RollP2"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toRightOf="@+id/button4"
+        app:layout_constraintLeft_toRightOf="@+id/RollP2"
         app:layout_constraintRight_toRightOf="@+id/spinner2"
         tools:layout_constraintBaseline_creator="1"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/RollP3"
         android:layout_width="156dp"
         android:layout_height="64dp"
         android:layout_marginEnd="124dp"
@@ -119,7 +119,7 @@
         tools:layout_constraintRight_creator="1" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/RollP2"
         android:layout_width="110dp"
         android:layout_height="64dp"
         android:layout_marginEnd="154dp"
@@ -127,9 +127,9 @@
         android:layout_marginRight="154dp"
         android:layout_marginStart="156dp"
         android:text="Green"
-        app:layout_constraintBaseline_toBaselineOf="@+id/button3"
+        app:layout_constraintBaseline_toBaselineOf="@+id/RollP3"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="@+id/button3"
+        app:layout_constraintLeft_toLeftOf="@+id/RollP3"
         app:layout_constraintRight_toRightOf="@+id/spinner2"
         tools:layout_constraintBaseline_creator="1"
         tools:layout_constraintLeft_creator="1"
@@ -304,16 +304,16 @@
         android:layout_marginRight="0dp"
         android:text="Start"
         android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/button6"
+        app:layout_constraintBottom_toBottomOf="@+id/RollP1"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button6"
+        app:layout_constraintTop_toTopOf="@+id/RollP1"
         app:layout_constraintVertical_bias="0.0"
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1" />
 
     <Button
-        android:id="@+id/button6"
+        android:id="@+id/RollP1"
         android:layout_width="152dp"
         android:layout_height="121dp"
         android:layout_marginEnd="89dp"
