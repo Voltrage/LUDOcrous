@@ -255,8 +255,6 @@ public class LudoSurfaceView extends FlashSurfaceView {
         canvas.drawCircle(1140,1295,25,yellowPiece);
 
 
-
-
     }
 
     public void drawStar(int xPos,  int yPos, Canvas canvas){
