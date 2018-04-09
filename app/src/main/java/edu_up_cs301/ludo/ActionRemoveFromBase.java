@@ -5,6 +5,8 @@ import edu_up_cs301.game.actionMsg.GameAction;
 
 /**
  * Created by Luke on 3/4/2018.
+ *
+ *
  */
 
 public class ActionRemoveFromBase extends GameAction {
@@ -18,7 +20,7 @@ public class ActionRemoveFromBase extends GameAction {
      */
     public ActionRemoveFromBase(GamePlayer player, int index) {
         super(player);
-        index = index;
+        this.index = index;
     }
 
     public int getIndex(){ return index; }

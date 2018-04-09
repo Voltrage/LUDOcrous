@@ -11,7 +11,6 @@ import edu_up_cs301.game.config.GamePlayerType;
 
 public class LudoMainActivity extends GameMainActivity {
 
-
     // the port number that this game will use when playing over the network
     private static final int PORT_NUMBER = 2278;
 
@@ -29,7 +28,7 @@ public class LudoMainActivity extends GameMainActivity {
         // Define the allowed player types
         ArrayList<GamePlayerType> playerTypes = new ArrayList<GamePlayerType>();
 
-        // Pig has two player types:  human and computer
+        // Ludo has two player types:  human and computer
         playerTypes.add(new GamePlayerType("Local Human") {
             public GamePlayer createPlayer(String name) {
                 return new HumanPlayer(name);
@@ -49,9 +48,10 @@ public class LudoMainActivity extends GameMainActivity {
         // Create a game configuration class for Ludo:
         GameConfig defaultConfig = new GameConfig(playerTypes, 1, 4, "Ludo", PORT_NUMBER);
         defaultConfig.addPlayer("Human", 0); // player 1: a human player
-        defaultConfig.addPlayer("Computer", 1); // player 2: a computer player
+        defaultConfig.addPlayer("ComputerEasy2", 1); // player 2: a computer player
         //TODO add smart computer Player
-        defaultConfig.addPlayer("ComputerAI", 1);
+        defaultConfig.addPlayer("ComputerEasy3", 1);
+        defaultConfig.addPlayer("ComputerEasy4", 1);
         defaultConfig.setRemoteData("Remote Human Player", "", 0);
 
         return defaultConfig;
@@ -61,7 +61,7 @@ public class LudoMainActivity extends GameMainActivity {
      * create a local game
      *
      * @return
-     * 		the local game, a pig game
+     * 		the local game, a Ludo game
      */
     @Override
     public LocalGame createLocalGame() {

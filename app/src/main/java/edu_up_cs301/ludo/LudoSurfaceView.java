@@ -1,24 +1,106 @@
 package edu_up_cs301.ludo;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
+import android.graphics.*;
 import android.util.AttributeSet;
-import android.view.SurfaceView;
-
+import edu_up_cs301.game.GamePlayer;
 import edu_up_cs301.game.util.FlashSurfaceView;
 
 
 /**
+ *
+ *
+ *
  * onDraw method Created by nayyar19 and guillermo19 on 2/3/2018.
  *
- * @author Luke
+ * @author Luke Danowski
+ * @author Avery Guillermo
+ * @author Ravi Nayyar
+ * @author Chris Sebchets
+ *
+ * @version April 9
  */
 
-public class LudoSurfaceView extends FlashSurfaceView {
+public class LudoSurfaceView extends FlashSurfaceView{
+
+    private LudoState state;// = new LudoState();
+    private GamePlayer hasMe;
+    private RectF[] boardPositions;
+    private RectF[][] startPositions;
+    private RectF[][] homeStretchPositions;
+    private float cellWH;
+
+    //general
+    Paint blackPaintBor;
+
+    //token
+    Paint[] tokenPaint;
+    Paint redPaintTok;
+    Paint greenPaintTok;
+    Paint yellowPaintTok;
+    Paint bluePaintTok;
+    Paint whitePaintTok;
+
+    //board
+    Paint[] boardPaint;
+    Paint greenPaintBor;
+    Paint redPaintBor;
+    Paint bluePaintBor;
+    Paint yellowPaintBor;
+    Paint whitePaintBor;
+    Paint whitePaint2Bor;
+
+
+//    //red
+//    private final int[][] path0 = new int[][]{
+//            {1, 6}, {2, 6}, {3, 6}, {4, 6}, {5, 6},
+//            {6, 5}, {6, 4}, {6, 3}, {6, 2}, {6, 1}, {6, 0},
+//            {7, 0},
+//            {8, 0}, {8, 1}, {8, 2}, {8, 3}, {8, 4}, {8, 5},
+//            {9, 6}, {10, 6}, {11, 6}, {12, 6}, {13, 6}, {14, 6},
+//            {14, 7},
+//            {14, 8}, {13, 8}, {12, 8}, {11, 8}, {10, 8}, {9, 8},
+//            {8, 9}, {8, 10}, {8, 11}, {8, 12}, {8, 13}, {8, 14},
+//            {7, 14},
+//            {6, 14}, {6, 13}, {6, 12}, {6, 11}, {6, 10}, {6, 9},
+//            {5, 8}, {4, 8}, {3, 8}, {2, 8}, {1, 8}, {0, 8},
+//            {0, 7}, {1, 7}, {2, 7}, {3, 7}, {4, 7}, {5, 7}, {6, 7}};
+//
+//    //green
+//    private final int[][] path1 = new int[][]{{8, 1}, {8, 2}, {8, 3}, {8, 4}, {8, 5},
+//        {9, 6}, {10, 6}, {11, 6}, {12, 6}, {13, 6}, {14, 6},
+//        {14, 7}, {14, 8}, {13, 8}, {12, 8}, {11, 8}, {10, 8},
+//        {9, 8}, {8, 9}, {8, 10}, {8, 11}, {8, 12}, {8, 13},
+//        {8, 14}, {7, 14}, {6, 14}, {6, 13}, {6, 12}, {6, 11},
+//        {6, 10}, {6, 9}, {5, 8}, {4, 8}, {3, 8}, {2, 8},
+//        {1, 8}, {0, 8}, {0, 7}, {0, 6}, {1, 6}, {2, 6},
+//        {3, 6}, {4, 6}, {5, 6}, {6, 5}, {6, 4}, {6, 3},
+//        {6, 2}, {6, 1}, {6, 0}, {7, 0}, {7, 1}, {7, 2},
+//        {7, 3}, {7, 4}, {7, 5}, {7, 6}};
+//
+//    //blue should be yellow
+//    private final int[][] path2 = new int[][]{{6, 13}, {6, 12}, {6, 11},
+//        {6, 10}, {6, 9}, {5, 8}, {4, 8}, {3, 8}, {2, 8},
+//        {1, 8}, {0, 8}, {0, 7}, {0, 6}, {1, 6}, {2, 6},
+//        {3, 6}, {4, 6}, {5, 6}, {6, 5}, {6, 4}, {6, 3},
+//        {6, 2}, {6, 1}, {6, 0}, {7, 0}, {8, 0},
+//        {8, 1}, {8, 2}, {8, 3}, {8, 4}, {8, 5},
+//        {9, 6}, {10, 6}, {11, 6}, {12, 6}, {13, 6}, {14, 6},
+//        {14, 7}, {14, 8}, {13, 8}, {12, 8}, {11, 8}, {10, 8},
+//        {9, 8}, {8, 9}, {8, 10}, {8, 11}, {8, 12}, {8, 13},
+//        {8, 14}, {7, 14}, {7, 13}, {7, 12}, {7, 11}, {7, 10}, {7, 9}, {7, 8}};
+//
+//    //yellow should be blue
+//    private final int[][] path3 = new int[][]{{13, 8}, {12, 8}, {11, 8}, {10, 8},
+//        {9, 8}, {8, 9}, {8, 10}, {8, 11}, {8, 12}, {8, 13},
+//        {8, 14}, {7, 14}, {6, 14}, {6, 13}, {6, 12}, {6, 11},
+//        {6, 10}, {6, 9}, {5, 8}, {4, 8}, {3, 8}, {2, 8},
+//        {1, 8}, {0, 8}, {0, 7}, {0, 6}, {1, 6}, {2, 6},
+//        {3, 6}, {4, 6}, {5, 6}, {6, 5}, {6, 4}, {6, 3},
+//        {6, 2}, {6, 1}, {6, 0}, {7, 0}, {8, 0},
+//        {8, 1}, {8, 2}, {8, 3}, {8, 4}, {8, 5},
+//        {9, 6}, {10, 6}, {11, 6}, {12, 6}, {13, 6}, {14, 6},
+//        {14, 7}, {13, 7}, {12, 7}, {11, 7}, {10, 7}, {9, 7}, {8, 7}};
 
     public LudoSurfaceView(Context context) {
         super(context);
@@ -30,10 +112,10 @@ public class LudoSurfaceView extends FlashSurfaceView {
         generalInit();
     }
 
-//    public LudoSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
-//        super(context, attrs, defStyleAttr);
-//        generalInit();
-//    }
+    public void setState(LudoState state) {
+        this.state = state;
+    }
+
 
     /**
      * \
@@ -43,7 +125,116 @@ public class LudoSurfaceView extends FlashSurfaceView {
      */
     private void generalInit() {
         setWillNotDraw(false);
-    }
+
+        cellWH = this.getWidth()/15f;
+
+        int[][] path = new int[][]{
+                //start
+                {0, 6}, {1, 6}, {2, 6}, {3, 6}, {4, 6}, {5, 6},
+                {6, 5}, {6, 4}, {6, 3}, {6, 2}, {6, 1}, {6, 0},
+                {7, 0},
+                {8, 0}, {8, 1}, {8, 2}, {8, 3}, {8, 4}, {8, 5},
+                {9, 6}, {10, 6}, {11, 6}, {12, 6}, {13, 6}, {14, 6},
+                {14, 7},
+                {14, 8}, {13, 8}, {12, 8}, {11, 8}, {10, 8}, {9, 8},
+                {8, 9}, {8, 10}, {8, 11}, {8, 12}, {8, 13}, {8, 14},
+                {7, 14},
+                {6, 14}, {6, 13}, {6, 12}, {6, 11}, {6, 10}, {6, 9},
+                {5, 8}, {4, 8}, {3, 8}, {2, 8}, {1, 8}, {0, 8},
+                {0, 7}, //would enter home stretch
+        };
+
+        int[][][] homeStrech = new int[][][]{
+                { {1, 7}, {2, 7}, {3, 7}, {4, 7}, {5, 7}, {6, 7} }, //red 0
+                { {7, 1}, {7, 2}, {7, 3}, {7, 4}, {7, 5}, {7, 6} }, //green 1
+                { {13, 7}, {12, 7}, {11, 7}, {10, 7}, {9, 7}, {8, 7}}, //yellow 2
+                { {7, 13}, {7, 12}, {7, 11}, {7, 10}, {7, 9}, {7, 8} } //blue 3
+        };
+
+
+        float[][][] startPos = new float[][][]{
+                { {3, 1.5f}, {4.5f, 3}, {3, 4.5f}, {1.5f, 3} },
+                { {12, 1.5f}, {13.5f, 3}, {12, 4.5f}, {10.5f, 3f} },
+                { {12, 10.5f}, {13.5f, 12}, {12, 13.5f}, {10.5f, 12} },
+                { {3, 10.5f}, {4.5f, 12}, {3, 13.5f}, {1.5f, 12} }
+        };
+
+        //define normal routes
+        boardPositions = new RectF[52];
+        for(int n = 0; n<52 ; n++) {
+            boardPositions[n] = new RectF(
+                    path[n][0]*(cellWH),
+                    path[n][1]*(cellWH),
+                    path[n][0]*(cellWH) + cellWH,
+                    path[n][1]*(cellWH) + cellWH );
+            //some space
+            boardPositions[n].inset(1f,1f);
+        }
+
+        //define home stretch
+        homeStretchPositions = new RectF[4][6];
+        for(int n1 = 0; n1<4 ; n1++){
+            for(int n2 = 0; n2<6 ; n2++){
+                homeStretchPositions[n1][n2] = new RectF(
+                        homeStrech[n1][n2][0]*(cellWH),
+                        homeStrech[n1][n2][1]*(cellWH),
+                        homeStrech[n1][n2][0]*(cellWH) + cellWH,
+                        homeStrech[n1][n2][1]*(cellWH) + cellWH );
+                //some space
+                homeStretchPositions[n1][n2].inset(1f,1f);
+            }
+        }
+
+        //define home base
+        startPositions = new RectF[4][4];
+        for(int n1 = 0; n1<4 ; n1++){
+            for(int n2 = 0; n2<4 ; n2++){
+                startPositions[n1][n2] = new RectF(
+                        startPos[n1][n2][0]*(cellWH),
+                        startPos[n1][n2][1]*(cellWH),
+                        startPos[n1][n2][0]*(cellWH) + cellWH,
+                        startPos[n1][n2][1]*(cellWH) + cellWH );
+                //some space
+                startPositions[n1][n2].inset(1f,1f);
+            }
+        }
+
+
+        redPaintTok = new Paint();
+        redPaintTok.setColor(Color.rgb(255,0,0));
+        greenPaintTok = new Paint();
+        greenPaintTok.setColor(Color.rgb(80, 255, 95));
+        bluePaintTok = new Paint();
+        bluePaintTok.setColor(Color.rgb(75,150,255));
+        yellowPaintTok = new Paint();
+        yellowPaintTok.setColor(Color.rgb(230, 190, 70));
+        whitePaintTok = new Paint();
+        whitePaintTok.setColor(Color.rgb(255,255,255));
+
+        tokenPaint = new Paint[] {redPaintTok, greenPaintTok, yellowPaintTok, bluePaintTok};
+
+
+        greenPaintBor = new Paint();
+        redPaintBor = new Paint();
+        bluePaintBor = new Paint();
+        yellowPaintBor = new Paint();
+        whitePaintBor = new Paint();
+        blackPaintBor = new Paint();
+        whitePaint2Bor = new Paint();
+        redPaintBor.setColor(Color.rgb(193, 23, 23));
+        greenPaintBor.setColor(Color.rgb(50, 220, 50));
+        bluePaintBor.setColor(Color.rgb(10, 10, 230));
+        yellowPaintBor.setColor(Color.rgb(242, 228, 38));
+        whitePaintBor.setColor(Color.rgb(255, 255, 255));
+        whitePaint2Bor.setColor(Color.rgb(255, 255, 255));
+        blackPaintBor.setColor(Color.rgb(0, 0, 0));
+
+        boardPaint = new Paint[] {redPaintBor, greenPaintBor, yellowPaintBor, bluePaintBor};
+
+
+    }//generalInit
+
+
 
 
     /**
@@ -53,220 +244,184 @@ public class LudoSurfaceView extends FlashSurfaceView {
      */
     @Override
     public void onDraw(Canvas canvas) {
-        //Draw a green filled square
-        //Creating Color Objects
-        Paint greenPaint = new Paint();
-        Paint redPaint = new Paint();
-        Paint bluePaint = new Paint();
-        Paint yellowPaint = new Paint();
-        Paint whitePaint = new Paint();
-        Paint blackPaint = new Paint();
-        Paint whitePaint2 = new Paint();
-        //Creating the colors
-        redPaint.setColor(Color.rgb(193, 23, 23));
-        greenPaint.setColor(Color.rgb(50, 220, 50));
-        bluePaint.setColor(Color.rgb(10, 10, 230));
-        yellowPaint.setColor(Color.rgb(242, 228, 38));
-        whitePaint.setColor(Color.rgb(255,255,255));
-        whitePaint2.setColor(Color.rgb(255,255,255));
-        blackPaint.setColor(Color.rgb(0,0,0));
 
+        if(cellWH<=0) {
+            //TODO: synchronize so generalInit will only need to be called once, in constructor after width & height are defined
+            generalInit();
+        }
+        canvas.drawRect(this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), blackPaintBor);
+        
 
-        //Drawing all HomeStrech and Opening Tiles
-        float i,j;
-        for(i=95; i<570;i=i+95){ j=665;   canvas.drawRect(i, j, (float) (i+95), (float) (j+95), redPaint);} //Red Homestrech
-            canvas.drawRect(95, 570,190f,665, redPaint); //Red Open Tile
-        for(i=855; i<1330;i=i+95){ j=665; canvas.drawRect(i, j, (float) (i+95), (float) (j+95), yellowPaint);} //Yellow Homestrech
-            canvas.drawRect(1235f, 760f, 1330f,855f, yellowPaint); //Yellow Open Tile
-        for(j=95; j<570;j=j+95){ i=667;   canvas.drawRect(i, j, (float) (i+95), (float) (j+95), greenPaint);} //Green Homestrech
-            canvas.drawRect(760f, 95f, 855f, 190f, greenPaint); //Green Open Tile
-        for(j=855; j<1330;j=j+95){ i=667; canvas.drawRect(i, j, (float) (i+95), (float) (j+95), bluePaint);} //Blue Homestrech
-            canvas.drawRect(570f, 1235f,665f,1330, bluePaint); //Blue Open Tile
-
-        //Drawing ALL Valid and Invalid small tile squares
-        for(i=0; i<(1426-95); i = i+95){
-            for(j=0; j<(1426); j = j+95){
-                whitePaint2.setStyle(Paint.Style.STROKE);
-                whitePaint2.setStrokeWidth(3);
-                canvas.drawRect(i, j, (float) (i+95), (float) (i+95), whitePaint2);
-                //canvas.restore();
+        for(int i = 0; i<52 ; i++){
+            canvas.drawRect(boardPositions[i],
+                    (i == 1 || i == 48) ? redPaintBor :
+                            (i == 9 || i == 14) ? greenPaintBor :
+                                    (i == 22 || i == 27) ? yellowPaintBor :
+                                            (i == 35 || i == 40) ? bluePaintBor : whitePaintBor);
+            switch(i) {
+//                case 1:
+                case 48:
+                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, whitePaintBor);
+                    break;
+//                case 14:
+                case 9:
+                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, whitePaintBor);
+                    break;
+//                case 27:
+                case 22:
+                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, whitePaintBor);
+                    break;
+//                case 40:
+                case 35:
+                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, whitePaintBor);
+                    break;
             }
         }
-        /*Outlining in a Black square
-        blackPaint.setStyle(Paint.Style.STROKE);
-         canvas.save();
-        canvas.rotate(45,285,60);
-        canvas.drawRect(285f, 60f, 628f, 394f, blackPaint);
-        canvas.restore();
-        */
 
-        //Red Large Tile Section Creation
-        canvas.drawRect(0.0f, 0.0f, 570.0f, 570.0f, redPaint);
-        canvas.save();
-        canvas.rotate(45,285,0);
-        canvas.drawRect(285f, 0f, 688f, 403f, whitePaint);
-        canvas.restore();
-        canvas.drawRect(220f, 65f, 350f, 195f, redPaint); //Top
-        canvas.drawRect(220f, 375f, 350f, 505f, redPaint); //Bottom
-        canvas.drawRect(370f, 215, 500f, 345f, redPaint);    //Right
-        canvas.drawRect(65f,215f,195f,345f, redPaint);    //Left
+        for( int p = 0; p < 4; p++){
+            for(int i = 0; i<6; i++) {
 
-        //Green Large Tile Section Creation
-        canvas.drawRect(855.0f, 0.0f, 1426.0f, 570.0f, greenPaint);
-        canvas.save();
-        canvas.rotate(45,1140f,0);
-        canvas.drawRect(1140f, 0f, 1543, 403f, whitePaint);
-        canvas.restore();
-        canvas.drawRect(1075f, 65f, 1205f, 195f, greenPaint); //Top
-        canvas.drawRect(1075f, 375f, 1205f, 505f, greenPaint); //Bottom
-        canvas.drawRect(1225f, 215, 1355f, 345f, greenPaint);    //Right
-        canvas.drawRect(920f,215f,1050f,345f, greenPaint);    //Left
+                canvas.drawRect(homeStretchPositions[p][i], boardPaint[p]);
 
-        //Blue Large Tile Section Creation
-        canvas.drawRect(0.0f, 855.0f, 570.0f, 1426.0f, bluePaint);
-        canvas.save();
-        canvas.rotate(45,285,855);
-        canvas.drawRect(285f, 855f, 688f, 1258f, whitePaint);
-        canvas.restore();
-        canvas.drawRect(220f, 920f, 350f, 1050f, bluePaint); //Top
-        canvas.drawRect(220f, 1230f, 350f, 1360f, bluePaint); //Bottom
-        canvas.drawRect(370f, 1070, 500f, 1200f, bluePaint);    //Right
-        canvas.drawRect(65f,1070,195f,1200f, bluePaint);    //Left
+            }
+        }
 
-        //Yellow Large Tile Section Creation
-        canvas.drawRect(855.0f, 855.0f, 1426.0f, 1426.0f, yellowPaint);
-        canvas.save();
-        canvas.rotate(45,1140f,855);
-        canvas.drawRect(1140f, 855f, 1543, 1258f, whitePaint);
-        canvas.restore();
-        canvas.drawRect(1075f, 920f, 1205f, 1050f, yellowPaint); //Top
-        canvas.drawRect(1075f, 1230f, 1205f, 1360f, yellowPaint); //Bottom
-        canvas.drawRect(1225f, 1070f, 1355f, 1200f, yellowPaint);    //Right
-        canvas.drawRect(920f,1070f,1050f,1200f, yellowPaint);    //Left
+//        //Red Large Tile Section Creation
+//        canvas.drawRect(0, 0, (cellWH * 6), (cellWH * 6), redPaint);
+//        Point d11 = new Point(boxInt * 3, 0);
+//        Point d12 = new Point(boxInt * 6, boxInt * 3);
+//        Point d13 = new Point((boxInt * 3), (boxInt * 6));
+//        Point d14 = new Point((boxInt * 0), (boxInt * 3)); //Bottom Left
+//        //Drawing the red diamond
+//        Path redDiamond = new Path();
+//        redDiamond.moveTo(d11.x, d11.y);
+//        redDiamond.lineTo(d12.x, d12.y);
+//        redDiamond.lineTo(d13.x, d13.y);
+//        redDiamond.lineTo(d14.x, d14.y);
+//        redDiamond.close();
+//        canvas.drawPath(redDiamond, whitePaint);
+//        drawStartTiles(cellWH, canvas, redPaint, 0, 0);
+//
+//        //Green Large Tile Section Creation
+//        canvas.drawRect((cellWH * 9), 0.0f, (cellWH * 15), (cellWH * 6), greenPaint);
+//        Point d21 = new Point(boxInt * 12, 0);
+//        Point d22 = new Point(boxInt * 15, boxInt * 3);
+//        Point d23 = new Point((boxInt * 12), (boxInt * 6));
+//        Point d24 = new Point((boxInt * 9), (boxInt * 3)); //Bottom Left
+//        //Drawing the green diamond
+//        Path greenDiamond = new Path();
+//        greenDiamond.moveTo(d21.x, d21.y);
+//        greenDiamond.lineTo(d22.x, d22.y);
+//        greenDiamond.lineTo(d23.x, d23.y);
+//        greenDiamond.lineTo(d24.x, d24.y);
+//        greenDiamond.close();
+//        canvas.drawPath(greenDiamond, whitePaint);
+//        drawStartTiles(cellWH, canvas, greenPaint, boxInt * 9, 0);
+//
+//        //Blue Large Tile Section Creation
+//        canvas.drawRect((cellWH * 0), cellWH * 9, (cellWH * 6), (cellWH * 15), bluePaint);
+//        Point d31 = new Point(boxInt * 3, boxInt * 9);
+//        Point d32 = new Point(boxInt * 6, boxInt * 12);
+//        Point d33 = new Point((boxInt * 3), (boxInt * 15));
+//        Point d34 = new Point((boxInt * 0), (boxInt * 12)); //Bottom Left
+//        //Drawing the blue diamond
+//        Path blueDiamond = new Path();
+//        blueDiamond.moveTo(d31.x, d31.y);
+//        blueDiamond.lineTo(d32.x, d32.y);
+//        blueDiamond.lineTo(d33.x, d33.y);
+//        blueDiamond.lineTo(d34.x, d34.y);
+//        blueDiamond.close();
+//        canvas.drawPath(blueDiamond, whitePaint);
+//        drawStartTiles(cellWH, canvas, bluePaint, 0, boxInt * 9);
+//
+//        //Yellow Large Tile Section Creation
+//        canvas.drawRect((cellWH * 9), (cellWH * 9), (cellWH * 15), (cellWH * 15), yellowPaint);
+//        Point d41 = new Point(boxInt * 12, boxInt * 9);
+//        Point d42 = new Point(boxInt * 15, boxInt * 12);
+//        Point d43 = new Point((boxInt * 12), (boxInt * 15));
+//        Point d44 = new Point((boxInt * 9), (boxInt * 12)); //Bottom Left
+//        //Drawing the yellow diamond
+//        Path yellowDiamond = new Path();
+//        yellowDiamond.moveTo(d41.x, d41.y);
+//        yellowDiamond.lineTo(d42.x, d42.y);
+//        yellowDiamond.lineTo(d43.x, d43.y);
+//        yellowDiamond.lineTo(d44.x, d44.y);
+//        yellowDiamond.close();
+//        canvas.drawPath(yellowDiamond, whitePaint);
+//        drawStartTiles(cellWH, canvas, yellowPaint, boxInt * 9, boxInt * 9);
+//
+//        //Drawing Center Square
+//        canvas.drawRect((cellWH * 6), (cellWH * 6), (cellWH * 9), (cellWH * 9), whitePaint);
+//        Point p1 = new Point((boxInt * 6), (boxInt * 6)); //Top Left
+//        Point p2 = new Point((canvas.getWidth() / 2), (canvas.getWidth() / 2)); //Dead Center
+//        Point p3 = new Point((boxInt * 9), (boxInt * 6)); //Top Right
+//        Point p4 = new Point((boxInt * 6), (boxInt * 9)); //Bottom Left
+//        Point p5 = new Point((boxInt * 9), (boxInt * 9)); //Bottom Right
+//        //Drawing the green Center Triangle
+//        Path tri1 = new Path();
+//        tri1.moveTo(p1.x, p1.y);
+//        tri1.lineTo(p2.x, p2.y);
+//        tri1.lineTo(p3.x, p3.y);
+//        tri1.close();
+//        canvas.drawPath(tri1, greenPaint);
+//
+//        //Drawing the red Center Triangle
+//        Path tri2 = new Path();
+//        tri2.moveTo(p1.x, p1.y);
+//        tri2.lineTo(p2.x, p2.y);
+//        tri2.lineTo(p4.x, p4.y);
+//        tri2.close();
+//        canvas.drawPath(tri2, redPaint);
+//
+//        //Drawing the blue Center Triangle
+//        Path tri3 = new Path();
+//        tri3.moveTo(p4.x, p4.y);
+//        tri3.lineTo(p2.x, p2.y);
+//        tri3.lineTo(p5.x, p5.y);
+//        tri3.close();
+//        canvas.drawPath(tri3, bluePaint);
+//
+//        //Drawing the yellow Center Triangle
+//        Path tri4 = new Path();
+//        tri4.moveTo(p3.x, p3.y);
+//        tri4.lineTo(p2.x, p2.y);
+//        tri4.lineTo(p5.x, p5.y);
+//        tri4.close();
+//        canvas.drawPath(tri4, yellowPaint);
+//
+//        //draw the safe space tiles
+//        drawStar((boxInt * 2), (boxInt * 8), canvas, cellWH);
+//        drawStar((boxInt * 8), (boxInt * 12), canvas, cellWH);
+//        drawStar((boxInt * 6), (boxInt * 2), canvas, cellWH);
+//        drawStar((boxInt * 12), (boxInt * 6), canvas, cellWH);
+//
+        //draw all the pieces
+        drawPieces(canvas);
 
-        //Drawing Center Square
-        canvas.drawRect(570, 570, 855,855, whitePaint);
-
-        Point p1 = new Point(570,570); //Top Left
-        Point p2 = new Point(713,713); //Dead Center
-        Point p3 = new Point(855,570); //Top Right
-        Point p4 = new Point(570,855); //Bottom Left
-        Point p5 = new Point(855,855); //Bottom Right
-
-        Path tri1 = new Path();
-        tri1.moveTo(p1.x,p1.y);
-        tri1.lineTo(p2.x,p2.y);
-        tri1.lineTo(p3.x,p3.y);
-        tri1.close();
-        canvas.drawPath(tri1,greenPaint);
-
-        Path tri2 = new Path();
-        tri2.moveTo(p1.x,p1.y);
-        tri2.lineTo(p2.x,p2.y);
-        tri2.lineTo(p4.x,p4.y);
-        tri2.close();
-        canvas.drawPath(tri2,redPaint);
-
-        Path tri3 = new Path();
-        tri3.moveTo(p4.x,p4.y);
-        tri3.lineTo(p2.x,p2.y);
-        tri3.lineTo(p5.x,p5.y);
-        tri3.close();
-        canvas.drawPath(tri3,bluePaint);
-
-        Path tri4 = new Path();
-        tri4.moveTo(p3.x,p3.y);
-        tri4.lineTo(p2.x,p2.y);
-        tri4.lineTo(p5.x,p5.y);
-        tri4.close();
-        canvas.drawPath(tri4,yellowPaint);
-
-
-        drawStar(190,760,canvas);
-        drawStar(760,1140,canvas);
-        drawStar(570,190,canvas);
-        drawStar(1140,570,canvas);
-
-        drawDice(0,0,canvas);
-
-
-        Paint greenPiece = new Paint();
-        Paint redPiece = new Paint();
-        Paint bluePiece = new Paint();
-        Paint yellowPiece = new Paint();
-        redPiece.setColor(Color.rgb(255,0,0));
-        greenPiece.setColor(Color.rgb(80, 255, 95));
-        bluePiece.setColor(Color.rgb(75,150,255));
-        yellowPiece.setColor(Color.rgb(230, 190, 70));
-
-        canvas.drawCircle(285,130,30,whitePaint);
-        canvas.drawCircle(285,130,25,redPiece);
-
-        //R1
-        canvas.drawCircle(285,130,30,whitePaint);
-        canvas.drawCircle(285,130,25,redPiece);
-        //R2
-        canvas.drawCircle(132,280,30,whitePaint);
-        canvas.drawCircle(132,280,25,redPiece);
-        //R3
-        canvas.drawCircle(617,712,30,whitePaint);
-        canvas.drawCircle(617,712,25,redPiece);
-        //R4
-        canvas.drawCircle(1092,617,30,whitePaint);
-        canvas.drawCircle(1092,617,25,redPiece);
-
-        //B1
-        canvas.drawCircle(285,985,30,whitePaint);
-        canvas.drawCircle(285,985,25,bluePiece);
-        //B2
-        canvas.drawCircle(712,1187,30,whitePaint);
-        canvas.drawCircle(712,1187,25,bluePiece);
-        //B3
-        canvas.drawCircle(805,45,30,whitePaint);
-        canvas.drawCircle(805,45,25,bluePiece);
-        //B4
-        canvas.drawCircle(237,807,30,whitePaint);
-        canvas.drawCircle(237,807,25,bluePiece);
-
-        //G1
-        canvas.drawCircle(1140,130,30,whitePaint);
-        canvas.drawCircle(1140,130,25,greenPiece);
-        //G2
-        canvas.drawCircle(990,280,30,whitePaint);
-        canvas.drawCircle(990,280,25,greenPiece);
-        //G3
-        canvas.drawCircle(1288,280,30,whitePaint);
-        canvas.drawCircle(1288,280,25,greenPiece);
-        //G4
-        canvas.drawCircle(617,1092,30,whitePaint);
-        canvas.drawCircle(617,1092,25,greenPiece);
-
-        //Y1
-        canvas.drawCircle(1140,980,30,whitePaint);
-        canvas.drawCircle(1140,980,25,yellowPiece);
-        //Y2
-        canvas.drawCircle(990,1135,30,whitePaint);
-        canvas.drawCircle(990,1135,25,yellowPiece);
-        //Y3
-        canvas.drawCircle(1288,1135,30,whitePaint);
-        canvas.drawCircle(1288,1135,25,yellowPiece);
-        //Y4
-        canvas.drawCircle(1140,1295,30,whitePaint);
-        canvas.drawCircle(1140,1295,25,yellowPiece);
-
-
+        drawDice(canvas); //draw the dice
     }
+
+
 
     public void drawStar(int xPos,  int yPos, Canvas canvas){
         Paint whitePaint = new Paint();
         whitePaint.setColor(Color.rgb(255,255,255));
-        Point p1 = new Point(xPos+11,yPos+29); //Bottom Left of Lower Star
-        Point p2 = new Point(xPos+85,yPos+29); //Bottom Right of Lower Star
-        Point p3 = new Point(xPos+47,yPos+87); //Top of Star
 
-        Point p4 = new Point(xPos+11,yPos+66); //Left point of Uppper Star
-        Point p5 = new Point(xPos+85,yPos+66); //Right point of Upper Star
-        Point p6 = new Point(xPos+47,yPos+8); //Bottom of Star
+        int xShift1 = (int) (0.1122449*cellWH);
+        int xShift2 = (int) (0.5*cellWH);
+        int xShift3 = (int) (0.88877551*cellWH);
+        int yShift1 = (int) (0.295918*cellWH);
+        int yShift2 = (int) (0.8877551*cellWH);
+        int yShift3 = (int) (0.673469*cellWH);
+        int yShift4 = (int) (0.08163*cellWH);
+
+        Point p1 = new Point(xPos+xShift1,yPos+yShift1); //Bottom Left of Lower Star
+        Point p2 = new Point(xPos+xShift3,yPos+yShift1); //Bottom Right of Lower Star
+        Point p3 = new Point(xPos+xShift2,yPos+yShift2); //Top of Star
+
+        Point p4 = new Point(xPos+xShift1,yPos+yShift3); //Left point of Upper Star
+        Point p5 = new Point(xPos+xShift3,yPos+yShift3); //Right point of Upper Star
+        Point p6 = new Point(xPos+xShift2,yPos+yShift4); //Bottom of Star
 
 
         Path bottomStar = new Path();
@@ -285,23 +440,183 @@ public class LudoSurfaceView extends FlashSurfaceView {
         topStar.close();
         canvas.drawPath(topStar,whitePaint);
 
+    }
+
+
+    public void drawDice(Canvas canvas){
+        if(state!=null) {
+            Paint greyPaint = new Paint();
+            greyPaint.setColor(Color.rgb(100, 100, 100));
+            Paint redPaint = new Paint();
+            redPaint.setColor(Color.rgb(255, 0, 0));
+            Paint greenPaint = new Paint();
+            greenPaint.setColor(Color.rgb(0, 255, 0));
+            Paint bluePaint = new Paint();
+            bluePaint.setColor(Color.rgb(0, 0, 255));
+            Paint yellowPaint = new Paint();
+            yellowPaint.setColor(Color.rgb(255, 255, 0));
+            Paint blackPaint = new Paint();
+            blackPaint.setColor(Color.rgb(0, 0, 0));
+
+//        Log.i("\nWho's Move is it:"," "+state.getWhoseMove()+"\n");
+//        Log.i("","XPOS"+xPos+"   YPOS:"+yPos);
+            //clearDice(canvas,box);
+            // if(state.getDiceVal()==6) {
+            switch (state.getWhoseMove()) {
+                case 0:
+                    canvas.drawRect((float) (cellWH * 2.3), (float) (cellWH * 2.3), (float) (cellWH * 3.7), (float) (cellWH * 3.7), redPaint);
+                    drawDots(0, 0, cellWH, state.getDiceVal(), canvas, blackPaint);
+                    break;
+                case 1:
+                    canvas.drawRect(((float) ((cellWH * 11.3))), (float) (cellWH * 2.3), ((float) ((cellWH * 12.7))), (float) (cellWH * 3.7), greenPaint);
+                    drawDots(cellWH * 9, 0, cellWH, state.getDiceVal(), canvas, blackPaint);
+                    break;
+                case 2:
+                    canvas.drawRect(((float) ((cellWH * 11.3))), ((float) ((cellWH * 11.3))), ((float) ((cellWH * 12.7))), ((float) ((cellWH * 12.7))), yellowPaint);
+                    drawDots(cellWH * 9, cellWH * 9, cellWH, state.getDiceVal(), canvas, blackPaint);
+                    break;
+                case 3:
+                    canvas.drawRect(((float) ((cellWH * 2.3))), ((float) ((cellWH * 11.3))), ((float) (cellWH * 3.7)), ((float) ((cellWH * 12.7))), bluePaint);
+                    drawDots(0, cellWH * 9, cellWH, state.getDiceVal(), canvas, blackPaint);
+                    break;
+            }
+            // }
+//        else {
+//            switch (state.getWhoseMove() - 1) {
+//                case 0:
+//                    canvas.drawRect((float) (box * 2.3), (float) (box * 2.3), (float) (box * 3.7), (float) (box * 3.7), redPaint);
+//                    drawDots(0, 0, box, state.getDiceVal(), canvas, blackPaint);
+//                    break;
+//                case 1:
+//                    canvas.drawRect(((float) ((box * 11.3))), (float) (box * 2.3), ((float) ((box * 12.7))), (float) (box * 3.7), greenPaint);
+//                    drawDots(box * 9, 0, box, state.getDiceVal(), canvas, blackPaint);
+//                    break;
+//                case 2:
+//                    canvas.drawRect(((float) ((box * 11.3))), ((float) ((box * 11.3))), ((float) ((box * 12.7))), ((float) ((box * 12.7))), yellowPaint);
+//                    drawDots(box * 9, box * 9, box, state.getDiceVal(), canvas, blackPaint);
+//                    break;
+//                case -1:
+//                    canvas.drawRect(((float) ((box * 2.3))), ((float) ((box * 11.3))), ((float) (box * 3.7)), ((float) ((box * 12.7))), bluePaint);
+//                    drawDots(0, box * 9, box, state.getDiceVal(), canvas, blackPaint);
+//                    break;
+//            }
+        }
+    }
+
+
+    public void drawDots(float xPos, float yPos, float shift ,int diceVal,Canvas canvas, Paint color){
+        switch (diceVal){
+            case 1:
+                canvas.drawCircle(xPos+ shift*3,yPos+ shift*3,18,color);
+                break;
+            case 2:
+                canvas.drawCircle(xPos + (float)(shift*2.7), yPos + (float)(shift*2.7),18,color);
+                canvas.drawCircle(xPos + (float)(shift*3.3), yPos + (float)(shift*3.3),18,color);
+                break;
+            case 3:
+                canvas.drawCircle(xPos + (float)(shift*2.7), yPos + (float)(shift*2.7),18,color);
+                canvas.drawCircle(xPos + (float)(shift*3.3), yPos + (float)(shift*3.3),18,color);
+                canvas.drawCircle(xPos + (float)(shift*3), yPos + (float)(shift*3),18,color);
+                break;
+            case 4:
+                canvas.drawCircle(xPos + (float)(shift*2.7), yPos + (float)(shift*2.7),15,color);
+                canvas.drawCircle(xPos + (float)(shift*2.7), yPos + (float)(shift*3.3),15,color);
+                canvas.drawCircle(xPos + (float)(shift*3.3), yPos + (float)(shift*2.7),15,color);
+                canvas.drawCircle(xPos + (float)(shift*3.3), yPos + (float)(shift*3.3),15,color);
+                break;
+            case 5:
+                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*2.6),15,color);
+                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*3.4),15,color);
+                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*2.6),15,color);
+                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*3.4),15,color);
+                canvas.drawCircle(xPos + (float)(shift*3), yPos + (float)(shift*3),15,color);
+                break;
+            case 6:
+                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*2.6),15,color);
+                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*3.4),15,color);
+                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*2.6),15,color);
+                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*3.4),15,color);
+                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*3),15,color);
+                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*3),15,color);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void clearDice(Canvas canvas){
+        Paint whitePaint = new Paint();
+        whitePaint.setColor(Color.rgb(255,255,255));
+        canvas.drawRect((float)(cellWH*2.3) , (float)(cellWH*2.3), (float)(cellWH*3.7), (float)(cellWH*3.7), whitePaint);
+        canvas.drawRect(((float)(883.19995 + (cellWH*2.3))), (float)(cellWH*2.3), ((float)(883.19995 + (cellWH*3.7))), (float)(cellWH*3.7), whitePaint);
+        canvas.drawRect(((float)((cellWH*2.3))), ((float)(883.19995+(cellWH*2.3))), ((float)(cellWH*3.7)),((float)(883.19995+(cellWH*3.7))), whitePaint);
+        canvas.drawRect(((float)(883.19995 + (cellWH*2.3))),((float)(883.19995+(cellWH*2.3))),((float)(883.19995 + (cellWH*3.7))),((float)(883.19995+(cellWH*3.7))),whitePaint);
 
 
     }
 
-    public void drawDice(int xPos, int yPos, Canvas canvas){
-        Paint greyPaint = new Paint();
-        Paint redPaint = new Paint();
 
-        greyPaint.setColor(Color.rgb(100,100,100));
-        redPaint.setColor(Color.rgb(255,0,0));
-        //Drawing the Face of Die
-        canvas.drawRect(220.0f, 220.0f, 350.0f, 350.0f, greyPaint);
-        //Drawing the Dots
-        canvas.drawCircle(306,263,10,redPaint);
-        canvas.drawCircle(285,285,10,redPaint);
-        canvas.drawCircle(263,307,10,redPaint);
+
+    public void drawStartTiles(Canvas canvas,Paint paint,int xShfit, int yShift){
+
+        int box1X1=(int)(cellWH*2.3),box1Y1=(int)(cellWH*0.7), box1X2=(int)(cellWH*3.7), box1Y2=(int)(cellWH*2.1);
+        int box2X1=(int)(cellWH*3.9),box2Y1=(int)(cellWH*2.3), box2X2=(int)(cellWH*5.3), box2Y2=(int)(cellWH*3.7);
+        int box3X1=(int)(cellWH*2.3),box3Y1=(int)(cellWH*3.9), box3X2=(int)(cellWH*3.7), box3Y2=(int)(cellWH*5.3);
+        int box4X1=(int)(cellWH*0.7),box4Y1=(int)(cellWH*2.3), box4X2=(int)(cellWH*2.1), box4Y2=(int)(cellWH*3.7);
+        canvas.drawRect(box1X1+xShfit,box1Y1+yShift,box1X2+xShfit,box1Y2+yShift,paint);
+        canvas.drawRect(box2X1+xShfit,box2Y1+yShift,box2X2+xShfit,box2Y2+yShift,paint);
+        canvas.drawRect(box3X1+xShfit,box3Y1+yShift,box3X2+xShfit,box3Y2+yShift,paint);
+        canvas.drawRect(box4X1+xShfit,box4Y1+yShift,box4X2+xShfit,box4Y2+yShift,paint);
+
+    }
+
+    //created by Luke
+    public void drawPieces(Canvas canvas) {
+
+        if(state!=null) {
+
+            for (int p = 0; p < 4; p++) { //through each player
+                for (int i = p; i < 16; i += 4) { //through each of their pieces
+
+                    switch (state.pieces[i].getTokenState()) {
+                        case 0: //is starting in home base
+                            canvas.drawCircle(startPositions[p][i / 4].centerX(), startPositions[p][i / 4].centerY(), cellWH * .37f, blackPaintBor);
+                            canvas.drawCircle(startPositions[p][i / 4].centerX(), startPositions[p][i / 4].centerY(), cellWH * .35f, tokenPaint[p]);
+                            break;
+                        case 1: //is en route
+                            int indexInBoard = state.pieces[i].getAdjustedNumSpacesMoved();
+                            canvas.drawCircle(boardPositions[indexInBoard].centerX(), boardPositions[indexInBoard].centerY(), cellWH * .37f, blackPaintBor);
+                            canvas.drawCircle(boardPositions[indexInBoard].centerX(), boardPositions[indexInBoard].centerY(), cellWH * .35f, tokenPaint[p]);
+                            break;
+                        case 2: //is in home stretch
+                            canvas.drawCircle(homeStretchPositions[p][i / 4].centerX(), homeStretchPositions[p][i / 4].centerY(), cellWH * .37f, blackPaintBor);
+                            canvas.drawCircle(homeStretchPositions[p][i / 4].centerX(), homeStretchPositions[p][i / 4].centerY(), cellWH * .35f, tokenPaint[p]);
+                            break;
+                        default:
+                    }
+                }
+            }
+        }
     }
 
 
+    /**
+     * getters
+     * @return
+     */
+    public RectF getBoardPositions(int index) {
+        return boardPositions[index];
+    }
+
+    public RectF getStartPositions(int player, int piece) {
+        return startPositions[player][piece];
+    }
+
+    public RectF getHomeStretchPositions(int player, int piece) {
+        return homeStretchPositions[player][piece];
+    }
+
+    public void setHasMe(GamePlayer hasMe) {
+        this.hasMe = hasMe;
+    }
 }
