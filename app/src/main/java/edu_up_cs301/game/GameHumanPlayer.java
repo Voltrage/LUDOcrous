@@ -314,6 +314,19 @@ public abstract class GameHumanPlayer implements GamePlayer, Tickable {
 		// the game's result
 		MessageBox.popUpMessage(msg, myActivity);
 	}
+
+	/**
+	 * Sleeps for a particular amount of time. Utility method.
+	 *
+	 * @param milliseconds
+	 * 			the number of milliseconds to sleep for
+	 */
+	protected void sleep(int milliseconds) {
+		try {
+			Thread.sleep(milliseconds);
+		} catch (InterruptedException e) {
+		}
+	}
 	
 	/**
 	 * Tells whether this class requires a GUI to run

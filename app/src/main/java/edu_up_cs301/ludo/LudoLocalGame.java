@@ -5,6 +5,8 @@ import edu_up_cs301.game.GamePlayer;
 import edu_up_cs301.game.LocalGame;
 import edu_up_cs301.game.actionMsg.GameAction;
 
+import static java.lang.Thread.sleep;
+
 /**
  * Created by Luke on 2/28/2018.
  *
@@ -66,6 +68,21 @@ public class LudoLocalGame extends LocalGame {
         return null;
     }
 
+    /**
+     * Handles what to do in response to the GameAction sent
+     *
+     * RollDice  -> no moves -> next player
+     *            -> 1 move -> do the move (handles next player)
+     *
+     * MoveToken -> do the move (handles next player)
+     *
+     * EnableToken -> do the move
+     *
+     * @param action
+     * 			The move that the player has sent to the game
+     * @return
+     */
+
     @Override
     protected boolean makeMove(GameAction action) {
 //
@@ -89,10 +106,10 @@ public class LudoLocalGame extends LocalGame {
 //                    return true;
 //                }
 //
-//            } else if (action instanceof ActionRemoveFromBase) {
+//            } else if (action instanceof ActionEnableToken) {
 //
 //                //toggle boolean to false
-//                state.pieces[((ActionRemoveFromBase) action).getIndex()].setIsHome(false);
+//                state.pieces[((ActionEnableToken) action).getIndex()].setIsHome(false);
 //
 //            }
 //
@@ -105,78 +122,67 @@ public class LudoLocalGame extends LocalGame {
         //if its the person's turn and they are trying to make a move
         if (canMove(playerID = getPlayerIdx(action.getPlayer()))) {
 
-            if (action instanceof ActionMoveToken && state.getNumMovableTokens(playerID) > 1) {
-                //move forward, consider and react to landing on another piece
-                return state.advanceToken(playerID, ((ActionMoveToken) action).getIndex());
+            int numMoves = 0;
 
-            }
-            else if (action instanceof ActionRollDice && state.getIsRollable()) {
-
-                if (state.newRoll()) {
-                    //if in here, at least one move is possible
+            if (action instanceof ActionRollDice && state.getIsRollable()) {
 
 
-                    Log.i("diceval", " " + state.getDiceVal());
-
-
-//                    if only one token is out, it is the only one movable
-
-                    //if the player can't make any moves
-                    if(state.getDiceVal() !=6 && state.getNumMovableTokens(playerID) ==0){
-                        state.changePlayerTurn();
-                        return true;
-                    }
-
-//                    switch (state.getNumMovableTokens(playerID)) {
-//
-//                        case 1:
-//                            //advance only token in play
-//                            state.advanceToken(playerID, (state.getDiceVal() != 6 ? state.getTokenIndexOfFirstPieceInStart(playerID) : state.getTokenIndexOfFirstPieceOutOfStart(playerID)));
-//                        default:
-//                            return true;
-//
-//                    }
-
-
-
-                    //if the player did not roll a six but can move a single piece
-                    if (state.getDiceVal() != 6 && state.getNumMovableTokens(playerID) == 1) {
-                        state.setIsRollable(false);
-                        int index = state.getTokenIndexOfFirstPieceOutOfStart(playerID);
-                        state.advanceToken(playerID, index);
-                        state.tryNextPlayerActive();
-                        return true;
-                    }
-                    //if the player did not roll a six but can move multiple pieces
-                    if (state.getDiceVal() != 6 && state.getNumMovableTokens(playerID) > 1) {
-                        state.setIsRollable(false);
-                        return true;
-                    }
-
-//                    //if the player rolls a six, let them take a piece out of base
-//                    if (state.getDiceVal() == 6 && state.getTokenIndexOfFirstPieceInStart(playerID) >= 0) {
-//                        return true;
-//                    }
-
-                } else {
-                    //no moves available
-                    state.tryNextPlayerActive();
-                    return true;
+                //main function is to roll the dice
+                switch(numMoves = state.newRoll()){
+                    case 0:
+                        if( ! state.getIsRollUsable()){
+                            state.changePlayerTurn();
+                        }
+                        break;
+                    case 1: //only one move available,
+                        //find the only one that isMovable
+                        for (int i = playerID; i < 16; i += 4) {
+                            if (state.pieces[i].getIsMovable()) {
+                                //secondary method function, handle move it only one move is possible
+                                action = new ActionMoveToken(action.getPlayer(), i);
+//                                    state.advanceToken(playerID,i);
+                                break;
+                            }
+                        }
+                    default:
                 }
 
+                Log.i("diceval", " " + state.getDiceVal());
+//
+//                    //if the player did not roll a six but can move a single piece
+//                    if (state.getDiceVal() != 6 && state.getNumMovableTokens(playerID) == 1) {
+//                        state.setIsRollable(false);
+//                        int index = state.getTokenIndexOfFirstPieceOutOfStart(playerID);
+//                        state.advanceToken(playerID, index);
+//                        state.tryNextPlayerActive();
+//                        return true;
+//                    }
+//                    //if the player did not roll a six but can move multiple pieces
+//                    if (state.getDiceVal() != 6 && state.getNumMovableTokens(playerID) > 1) {
+//                        state.setIsRollable(false);
+//                        return true;
+//                    }
+//
+//
+//                } else {
+//                    //no moves available
+//                    state.tryNextPlayerActive();
+//                    return true;
+//                }
             }
 
 
-            //TODO: There is a bug: when a player rolls a six, they can move all their pieces out of start
-            else if (action instanceof ActionRemoveFromBase && state.getDiceVal() == 6) {
-                //toggle boolean to false
-                state.pieces[((ActionRemoveFromBase) action).getIndex()].setIsHome(false);
-
-                return true;
-
+            //moves piece selected
+            if ( ( action instanceof ActionMoveToken || action instanceof ActionEnableToken ) && state.getNumMovableTokens(playerID) > 0) {
+                //move forward, consider and react to landing on another piece
+                state.advanceToken(playerID, ((ActionMoveToken) action).getIndex());
             }
+
         }
+        //was true
         return true; // do nothing since the move was not valid!
 
     }
+
+
 }

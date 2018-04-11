@@ -153,10 +153,10 @@ public class LudoSurfaceView extends FlashSurfaceView{
 
 
         float[][][] startPos = new float[][][]{
-                { {3, 1.5f}, {4.5f, 3}, {3, 4.5f}, {1.5f, 3} },
-                { {12, 1.5f}, {13.5f, 3}, {12, 4.5f}, {10.5f, 3f} },
-                { {12, 10.5f}, {13.5f, 12}, {12, 13.5f}, {10.5f, 12} },
-                { {3, 10.5f}, {4.5f, 12}, {3, 13.5f}, {1.5f, 12} }
+                { {1f, 2.5f}, {2.5f, 1f}, {4f, 2.5f}, {2.5f, 4f} },
+                { {11.5f, 1f}, {13f, 2.5f}, {11.5f, 4f}, {10f, 2.5f} },
+                { {13f, 11.5f}, {11.5f, 13f}, {10f, 11.5f}, {11.5f, 10f} },
+                { {2.5f, 13f}, {1f, 11.5f}, {2.5f, 10f}, {4f, 11.5f} }
         };
 
         //define normal routes
@@ -398,8 +398,9 @@ public class LudoSurfaceView extends FlashSurfaceView{
         //draw all the pieces
         drawPieces(canvas);
 
-        drawDice(canvas); //draw the dice
-    }
+            drawDice(canvas); //draw the dice
+        }
+
 
 
 
@@ -458,48 +459,25 @@ public class LudoSurfaceView extends FlashSurfaceView{
             Paint blackPaint = new Paint();
             blackPaint.setColor(Color.rgb(0, 0, 0));
 
-//        Log.i("\nWho's Move is it:"," "+state.getWhoseMove()+"\n");
-//        Log.i("","XPOS"+xPos+"   YPOS:"+yPos);
-            //clearDice(canvas,box);
-            // if(state.getDiceVal()==6) {
-            switch (state.getWhoseMove()) {
-                case 0:
-                    canvas.drawRect((float) (cellWH * 2.3), (float) (cellWH * 2.3), (float) (cellWH * 3.7), (float) (cellWH * 3.7), redPaint);
-                    drawDots(0, 0, cellWH, state.getDiceVal(), canvas, blackPaint);
-                    break;
-                case 1:
-                    canvas.drawRect(((float) ((cellWH * 11.3))), (float) (cellWH * 2.3), ((float) ((cellWH * 12.7))), (float) (cellWH * 3.7), greenPaint);
-                    drawDots(cellWH * 9, 0, cellWH, state.getDiceVal(), canvas, blackPaint);
-                    break;
-                case 2:
-                    canvas.drawRect(((float) ((cellWH * 11.3))), ((float) ((cellWH * 11.3))), ((float) ((cellWH * 12.7))), ((float) ((cellWH * 12.7))), yellowPaint);
-                    drawDots(cellWH * 9, cellWH * 9, cellWH, state.getDiceVal(), canvas, blackPaint);
-                    break;
-                case 3:
-                    canvas.drawRect(((float) ((cellWH * 2.3))), ((float) ((cellWH * 11.3))), ((float) (cellWH * 3.7)), ((float) ((cellWH * 12.7))), bluePaint);
-                    drawDots(0, cellWH * 9, cellWH, state.getDiceVal(), canvas, blackPaint);
-                    break;
+             switch (state.getWhoseMove()) {
+                    case 0:
+                        canvas.drawRect((float) (cellWH * 2.3), (float) (cellWH * 2.3), (float) (cellWH * 3.7), (float) (cellWH * 3.7), redPaint);
+                        drawDots(0, 0, cellWH, state.getDiceVal(), canvas, blackPaint);
+                        break;
+                    case 1:
+                        canvas.drawRect(((float) ((cellWH * 11.3))), (float) (cellWH * 2.3), ((float) ((cellWH * 12.7))), (float) (cellWH * 3.7), greenPaint);
+                        drawDots(cellWH * 9, 0, cellWH, state.getDiceVal(), canvas, blackPaint);
+                        break;
+                    case 2:
+                        canvas.drawRect(((float) ((cellWH * 11.3))), ((float) ((cellWH * 11.3))), ((float) ((cellWH * 12.7))), ((float) ((cellWH * 12.7))), yellowPaint);
+                        drawDots(cellWH * 9, cellWH * 9, cellWH, state.getDiceVal(), canvas, blackPaint);
+                        break;
+                    case 3:
+                        canvas.drawRect(((float) ((cellWH * 2.3))), ((float) ((cellWH * 11.3))), ((float) (cellWH * 3.7)), ((float) ((cellWH * 12.7))), bluePaint);
+                        drawDots(0, cellWH * 9, cellWH, state.getDiceVal(), canvas, blackPaint);
+                        break;
+
             }
-            // }
-//        else {
-//            switch (state.getWhoseMove() - 1) {
-//                case 0:
-//                    canvas.drawRect((float) (box * 2.3), (float) (box * 2.3), (float) (box * 3.7), (float) (box * 3.7), redPaint);
-//                    drawDots(0, 0, box, state.getDiceVal(), canvas, blackPaint);
-//                    break;
-//                case 1:
-//                    canvas.drawRect(((float) ((box * 11.3))), (float) (box * 2.3), ((float) ((box * 12.7))), (float) (box * 3.7), greenPaint);
-//                    drawDots(box * 9, 0, box, state.getDiceVal(), canvas, blackPaint);
-//                    break;
-//                case 2:
-//                    canvas.drawRect(((float) ((box * 11.3))), ((float) ((box * 11.3))), ((float) ((box * 12.7))), ((float) ((box * 12.7))), yellowPaint);
-//                    drawDots(box * 9, box * 9, box, state.getDiceVal(), canvas, blackPaint);
-//                    break;
-//                case -1:
-//                    canvas.drawRect(((float) ((box * 2.3))), ((float) ((box * 11.3))), ((float) (box * 3.7)), ((float) ((box * 12.7))), bluePaint);
-//                    drawDots(0, box * 9, box, state.getDiceVal(), canvas, blackPaint);
-//                    break;
-//            }
         }
     }
 
@@ -544,18 +522,6 @@ public class LudoSurfaceView extends FlashSurfaceView{
         }
     }
 
-    public void clearDice(Canvas canvas){
-        Paint whitePaint = new Paint();
-        whitePaint.setColor(Color.rgb(255,255,255));
-        canvas.drawRect((float)(cellWH*2.3) , (float)(cellWH*2.3), (float)(cellWH*3.7), (float)(cellWH*3.7), whitePaint);
-        canvas.drawRect(((float)(883.19995 + (cellWH*2.3))), (float)(cellWH*2.3), ((float)(883.19995 + (cellWH*3.7))), (float)(cellWH*3.7), whitePaint);
-        canvas.drawRect(((float)((cellWH*2.3))), ((float)(883.19995+(cellWH*2.3))), ((float)(cellWH*3.7)),((float)(883.19995+(cellWH*3.7))), whitePaint);
-        canvas.drawRect(((float)(883.19995 + (cellWH*2.3))),((float)(883.19995+(cellWH*2.3))),((float)(883.19995 + (cellWH*3.7))),((float)(883.19995+(cellWH*3.7))),whitePaint);
-
-
-    }
-
-
 
     public void drawStartTiles(Canvas canvas,Paint paint,int xShfit, int yShift){
 
@@ -570,12 +536,13 @@ public class LudoSurfaceView extends FlashSurfaceView{
 
     }
 
-    //created by Luke
+    //created by Luke//TODO: fix when it goes to home stretch
     public void drawPieces(Canvas canvas) {
 
         if(state!=null) {
 
-            for (int p = 0; p < 4; p++) { //through each player
+            for (int p, r = 0; r < 4; r++) { //through each player
+                p = ~(state.getWhoseMove()+r) & 3;
                 for (int i = p; i < 16; i += 4) { //through each of their pieces
 
                     switch (state.pieces[i].getTokenState()) {
@@ -608,6 +575,12 @@ public class LudoSurfaceView extends FlashSurfaceView{
         return boardPositions[index];
     }
 
+    /**
+     * getter for start positions
+     * @param player 0-3 for index
+     * @param piece 0-3 for index
+     * @return
+     */
     public RectF getStartPositions(int player, int piece) {
         return startPositions[player][piece];
     }
@@ -619,4 +592,7 @@ public class LudoSurfaceView extends FlashSurfaceView{
     public void setHasMe(GamePlayer hasMe) {
         this.hasMe = hasMe;
     }
+
+
+
 }

@@ -1,6 +1,5 @@
 package edu_up_cs301.ludo;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import android.util.Log;
@@ -31,7 +30,7 @@ public class LudoState extends GameState {
     private int numPlayers;
     private int playerID_active;
     private int[] playerScore;
-    private boolean isRollUseable;
+    private boolean isRollUsable;
 
     /**
      * constructor, initializing from parameter
@@ -78,6 +77,7 @@ public class LudoState extends GameState {
         this.dice = original.dice;
         this.diceVal = original.diceVal;
         this.isRollable = original.isRollable;
+        this.isRollUsable = original.isRollUsable;
 
         //set the piece array
         this.pieces = new Token[original.pieces.length];
@@ -120,14 +120,14 @@ public class LudoState extends GameState {
     }
 
     /**
-     * generates a new random roll if player is allowed to play.
-     * considers if it is their turn and if roll a 6, they get to roll again
+     * generates a new random value between 1 and 6 for the active player,
+     * if roll a 6, they get to roll again so keep isRollable true
+     * only called if it was that players turn.
      *
-     //     * @param playerID who sent action
-     * @return true if dice was able to roll
+     * @return number of moves possible
      */
-    public boolean newRoll() {
-        if (isRollable && !isRollUseable){
+    public int newRoll() {
+        if (isRollable && !isRollUsable){
 
             //handle the case of rerolls on a 6 with a switch
             switch (diceVal = dice.nextInt(6) + 1) {
@@ -135,53 +135,53 @@ public class LudoState extends GameState {
                     isRollable = false; //so it stays true;
                 default:
                     isRollable = !isRollable;
-                    isRollUseable = true; //new roll has not been used so set true
-            }
-
-            //if no moves exist based on diceVal, mark as used so it is unusable
-            if(!updateMovesAvailable()){
-                isRollUseable =false;
             }
         }
-        //unable to roll
-        return false;
+        int result = updateAndCountMovesAvailable();
+        //if at least one move possible, then true
+        isRollUsable = result>0 ? true : false;
+
+        return result;
     }
 
     /**
      * Called after a dice roll. We go through the active player's pieces and checks for pieces
      * which can move by the rules of the game, each piece has a boolean which is changed to
-     * reflect the outcome of the check;
-     * @return true if valid moves exist
+     * reflect the outcome of the check.
+     * @return number of moves possible
      */
-    private boolean updateMovesAvailable() {
+    private int updateAndCountMovesAvailable() {
 
         //checks if any moves available;
-        boolean oneTrue = false;
+        int count = 0;
 
         //set movable boolean
-        for (int i = playerID_active; i < 16; i+=4) {
-            if (pieces[i].getIsHome()) {
-                if (diceVal == 6) {
-                    //is in home base and a 6 has been rolled
+        for (int i = playerID_active; i < 16; i += 4) {
+
+            switch (pieces[i].getTokenState()) {
+                case 0: //in home base
+                    if (diceVal == 6) {
+                        pieces[i].setIsMovable(true);
+                        count++;
+                    } else {
+                        pieces[i].setIsMovable(false);
+                    }
+                    break;
+                case 1: //en route
                     pieces[i].setIsMovable(true);
-                    oneTrue = true;
-                } else {
+                    count++;
+                    break;
+                case 2: //in home stretch
+                    if (pieces[i].getNumSpacesMoved() + diceVal < 58) {
+                        //in home stretch and total will be less than or equal to 57
+                        pieces[i].setIsMovable(true);
+                        count++;
+                    }
+                default:
                     pieces[i].setIsMovable(false);
-                }
-            } else if (pieces[i].getNumSpacesMoved() < 51) {
-                //in normal route
-                pieces[i].setIsMovable(true);
-                oneTrue = true;
-            } else if (pieces[i].getNumSpacesMoved() + diceVal < 57) {
-                //in home stretch and total will be less than or equal to 56
-                pieces[i].setIsMovable(true);
-                oneTrue = true;
-            } else {
-                pieces[i].setIsMovable(false);
             }
         }
-
-        return oneTrue;
+        return count;
     }
 
     /**
@@ -203,70 +203,6 @@ public class LudoState extends GameState {
 
 
     /**
-     * getter method to search for peice by reference to distance traveled
-     *
-     * @param playerID
-     * @param spacesTraveled
-     * @return
-     */
-    public int getTokenIndexByTravelDistance(int playerID, int spacesTraveled) {
-
-        //only iterates through players' 4 Tokens
-        for (int i = playerID; i < 16; i += 4) {
-            if (pieces[i].getOwner() == playerID && pieces[i].getNumSpacesMoved() == spacesTraveled) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-
-//    /**
-//     * helper method to get relevant pieces
-//     *
-//     * @param playerID
-//     * @return only the 4 pieces owned by the player
-//     */
-//    public Token[] getMyTokens(int playerID) {
-//        ArrayList<Token> myPieces = new ArrayList<>();
-//
-//        //only iterates through players' 4 Tokens
-//        for (int i = playerID; i < 16; i += 4) {
-//            if (pieces[i].getOwner() == playerID && myPieces.size() < 4) {
-//                myPieces.add(pieces[i]);
-//            }
-//        }
-//        return (Token[]) myPieces.toArray();
-//    }
-
-//    /**
-//     * helper method to get relevant pieces
-//     *
-//     * @param playerID
-//     * @return only the 4 pieces owned by the player
-//     */
-//    private Token[] getPlayerActiveTokens(int playerID) {
-//        ArrayList<Token> myPieces = new ArrayList<>();
-//
-//        //only iterates through players' 4 Tokens
-//        for (int i = playerID; i < 16; i += 4) {
-//            if (pieces[i].getOwner() == playerID && myPieces.size() < 4) {
-//                myPieces.add(pieces[i]);
-//            }
-//        }
-//        return (Token[]) myPieces.toArray();
-//    }
-
-
-//    public ArrayList<Token> isTokenWithinDiceValueOfMyTokensInPlay(int playerID) {
-//
-//        for (int i = 0; i < 16; i++) {
-//
-//        }
-//        return null;
-//    }
-
-    /**
      * increments player score
      */
     public void incPlayerScore() {
@@ -283,7 +219,7 @@ public class LudoState extends GameState {
     public int getNumMovableTokens(int playerID) {
         int count = 0;
         for (int i = playerID; i < 16; i+=4) {
-            if (pieces[i].getIsHome() == false && pieces[i].getReachedHomeBase() == false){
+            if (pieces[i].getIsMovable()){
                 count++;
             }
         }
@@ -320,13 +256,13 @@ public class LudoState extends GameState {
     /** @author Luke
      *
      * @param playerID
-     * @param spacesPieceHasTraveled
-     * @return
+     * @param index of piece in its array
+     * @return was move made
      */
     public boolean advanceToken(int playerID, int index) {
 
         //only act on movable pieces. Always updated after each dice roll.
-        if(pieces[index].getIsMovable() && isRollUseable) {
+        if(pieces[index].getIsMovable() && isRollUsable) {
 
             //used to implement player turn rules
             boolean change=true;
@@ -334,7 +270,8 @@ public class LudoState extends GameState {
             switch(pieces[index].getTokenState()) {
 
                 case 0: //in home base and movable
-                    pieces[index].setIsHome(false);
+                    //only movable if we just rolled a 6, so don't need to check
+                    pieces[index].enableToken();
                     //don't change turn
                     change=false;
                     break;
@@ -348,13 +285,14 @@ public class LudoState extends GameState {
                     //check for overlap in non-safe tiles
                     switch (pieces[index].getAdjustedNumSpacesMoved()) {
                         //safe tiles
-                        case 8:
-                        case 13:
-                        case 21:
-                        case 26:
-                        case 34:
-                        case 39:
-                        case 47:
+                        case 1:
+                        case 9:
+                        case 14:
+                        case 22:
+                        case 27:
+                        case 35:
+                        case 40:
+                        case 48:
                             break;  //do nothing
                         default:    //else
                             //check to see if we overlap and need to kick another piece back home
@@ -365,7 +303,7 @@ public class LudoState extends GameState {
                                         pieces[i].getAdjustedNumSpacesMoved() == pieces[index].getAdjustedNumSpacesMoved() //is at same spot
                                         ){
                                     //changes boolean and numSpacesMoved back to 0
-                                    pieces[i].setIsHome(true);
+                                    pieces[i].disableToken();
                                     //if sent a piece home, don't change turn
                                     change=false;
                                 }
@@ -373,7 +311,9 @@ public class LudoState extends GameState {
                     }
                     break;
                 case 2: //in home stretch
+                    //advance the piece
                     pieces[index].incNumSpacesMoved(diceVal);
+                    //check to see if it made it to the end, if so give the player a point
                     if(pieces[index].getNumSpacesMoved()==57){
                         incPlayerScore();
                         Log.i("Player Scored a Point",""+playerScore[playerID]);
@@ -385,33 +325,23 @@ public class LudoState extends GameState {
 
 
             //record that we used the dice value, any further attempts are invalid for this roll
-            isRollUseable = false;
+            isRollUsable = false;
 
-            if(change){
+            //deals with rule of when to change player turn
+            if(change) {
                 changePlayerTurn();
             }
 
             //successfully made a move
             return true;
         }
-        else {
-            //invalid input
-            return false;
-        }
-    }
 
-
-
-    //implemented by Avery!
-    public int getTokenIndexOfFirstPieceInStart(int playerID){
-        for(int i = playerID; i<16; i+=4){//traverse through the only the pieces the player owns
-            if(pieces[i].getTokenState()==0){
-                return i;
-            }
-        }
-        return -1;
+        //invalid input
+        return false;
 
     }
+
+
 
     //implemented by Avery!
     //used for the computer player!
@@ -434,7 +364,7 @@ public class LudoState extends GameState {
             output+= "\nPlayer " + pieces[i].getOwner() + ": ";
             for (int j = i; j < 16; j += 4) {
                 output+= "\nPiece " + (j-i)/4 + " at " + pieces[j].getNumSpacesMoved() +
-                        " and " + (pieces[j].getIsHome()? "is home." : "is not home.");
+                        " and " + (pieces[j].getTokenState()==0? "is home." : "is not home.");
             }
 
         }
@@ -442,5 +372,8 @@ public class LudoState extends GameState {
         return output;
     }
 
+    public boolean getIsRollUsable() {
+        return isRollUsable;
+    }
 
 }

@@ -86,7 +86,6 @@ private int numSpacesMoved;
     private int tokenState; //is home = 0, is en route = 1, is in home stretch = 2;
     private boolean isMovable;
     private boolean isHome;
-    private boolean reachedHomeBase;
 
 
     /**
@@ -98,7 +97,6 @@ private int numSpacesMoved;
         isMovable=false;
         isHome = true;
         owner = ownsMe;
-        this.reachedHomeBase = false;
 //
 //        switch(ownsMe){
 //            case 0:
@@ -164,7 +162,7 @@ private int numSpacesMoved;
         this.isMovable = original.isMovable;
         this.isHome = original.isHome;
         this.owner = original.owner;
-        this.reachedHomeBase = original.reachedHomeBase;
+        this.tokenState = original.tokenState;
     }
 
 
@@ -203,24 +201,31 @@ private int numSpacesMoved;
         isMovable = movable;
     }
 
-    public boolean getIsHome() {
-        return isHome;
+//    public boolean getIsHome() {
+//        return isHome;
+//    }
+//
+//    public void setIsHome(boolean home) {
+//        if(home){
+//            this.numSpacesMoved = 0;
+//        }
+//        isHome = home;
+//        updateState();
+//    }
+
+    public void enableToken(){
+        isHome=false;
+        updateState();
     }
 
-    public void setIsHome(boolean home) {
-        if(home){
-            this.numSpacesMoved = 0;
-        }
-        isHome = home;
-        updateState();
+    public void disableToken(){
+        isHome=true;
+        tokenState=0;
+        numSpacesMoved=0;
     }
 
     public int getOwner() {
         return owner;
-    }
-
-    public boolean getReachedHomeBase(){
-        return reachedHomeBase;
     }
 
     private void updateState() {
@@ -231,8 +236,11 @@ private int numSpacesMoved;
         else if(numSpacesMoved<52){
             tokenState = 1;
         }
-        else{
+        else if(numSpacesMoved<58){
             tokenState = 2;
+        }
+        else {
+            tokenState=4;
         }
 
     }
