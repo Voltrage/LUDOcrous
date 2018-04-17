@@ -1,6 +1,10 @@
 package edu_up_cs301.ludo;
 
+import android.graphics.Canvas;
 import android.graphics.Point;
+import android.util.Log;
+
+import java.io.Serializable;
 
 /**
  * Created by Luke on 1/31/2018.
@@ -10,7 +14,7 @@ import android.graphics.Point;
  *
  */
 
-public class Token {
+public class Token implements Serializable{
 //
 //
 //                  [] [] []
@@ -80,10 +84,14 @@ public class Token {
 //        }
 ////traverse backward,
 //
-//instance variables
-private int numSpacesMoved;
+
+    private static final long serialVersionUID = 236783498728394l;
+
+
+    //instance variables
+    private int numSpacesMoved;
     private int owner;
-    private int tokenState; //is home = 0, is en route = 1, is in home stretch = 2;
+    private int tokenState; //is home = 0, is en route = 1, is in home stretch = 2, done = 3;
     private boolean isMovable;
     private boolean isHome;
 
@@ -172,10 +180,10 @@ private int numSpacesMoved;
      */
     public int getAdjustedNumSpacesMoved() {
 
-        int index = this.numSpacesMoved+owner*13+1; //0 starts at 1, 1 starts at 14, 2 starts at 28, 3 starts at 4
+        int index = this.numSpacesMoved+owner*13+1; //0 starts at 1, 1 starts at 14, 2 starts at 27, 3 starts at 40
 
         if(index>51) {
-            index -= 51;
+            index -= 52;
         }
 
         return index;
@@ -188,8 +196,10 @@ private int numSpacesMoved;
     }
 
     public void incNumSpacesMoved(int numDiceVal) {
-        this.numSpacesMoved += numDiceVal;
-        updateState();
+        if(tokenState>0) {
+            this.numSpacesMoved += numDiceVal;
+            updateState();
+        }
     }
 
 
@@ -215,13 +225,15 @@ private int numSpacesMoved;
 
     public void enableToken(){
         isHome=false;
-        updateState();
+        tokenState=1;
+//        updateState();
     }
 
     public void disableToken(){
         isHome=true;
         tokenState=0;
         numSpacesMoved=0;
+//        updateState();
     }
 
     public int getOwner() {
@@ -233,15 +245,16 @@ private int numSpacesMoved;
         if(isHome){
             tokenState = 0;
         }
-        else if(numSpacesMoved<52){
+        else if(numSpacesMoved<51){ //
             tokenState = 1;
         }
-        else if(numSpacesMoved<58){
+        else if(numSpacesMoved<56){
             tokenState = 2;
         }
         else {
-            tokenState=4;
+            tokenState = 3;
         }
 
     }
+
 }

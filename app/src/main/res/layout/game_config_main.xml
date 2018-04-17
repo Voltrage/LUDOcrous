@@ -16,11 +16,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="@dimen/table_row_vert_pad" >
 
-        <Button
-            android:id="@+id/saveConfigButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/config_horiz_margin"
+        <Button android:id="@+id/saveConfigButton" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_marginLeft="@dimen/config_horiz_margin"
             android:text="@string/save_config_as_default" />
 
         <Button

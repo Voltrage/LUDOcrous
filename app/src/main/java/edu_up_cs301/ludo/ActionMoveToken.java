@@ -19,7 +19,7 @@ public class ActionMoveToken extends GameAction {
      * constructor for GameAction
      *
      * @param player the player who created the action
-     * @param index index of piece
+     * @param index index of piece in the array in LudoState
      */
     public ActionMoveToken(GamePlayer player, int index){
         super(player);
@@ -29,7 +29,7 @@ public class ActionMoveToken extends GameAction {
 
     /**
      * getter method for index of piece
-     * @return the index
+     * @return the index of piece in the array in LudoState
      */
     public int getIndex() {
         return this.index;

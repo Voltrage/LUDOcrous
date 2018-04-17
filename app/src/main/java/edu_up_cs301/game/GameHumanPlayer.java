@@ -100,6 +100,7 @@ public abstract class GameHumanPlayer implements GamePlayer, Tickable {
 	 */
 	protected void initAfterReady() {
 		// by default, we do nothing
+
 	}
 	
 	/**

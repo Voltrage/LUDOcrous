@@ -122,17 +122,14 @@ public class LudoLocalGame extends LocalGame {
         //if its the person's turn and they are trying to make a move
         if (canMove(playerID = getPlayerIdx(action.getPlayer()))) {
 
-            int numMoves = 0;
-
             if (action instanceof ActionRollDice && state.getIsRollable()) {
 
 
-                //main function is to roll the dice
-                switch(numMoves = state.newRoll()){
+                //main function is to roll the dice, then deal with how many moves are possible differently
+                switch(state.newRoll()){
                     case 0:
-                        if( ! state.getIsRollUsable()){
-                            state.changePlayerTurn();
-                        }
+                        Log.i("Playable", " nothing available with a");
+                        state.changePlayerTurn();
                         break;
                     case 1: //only one move available,
                         //find the only one that isMovable
@@ -147,7 +144,18 @@ public class LudoLocalGame extends LocalGame {
                     default:
                 }
 
-                Log.i("diceval", " " + state.getDiceVal());
+                Log.i("Dice", " rolled " + state.getDiceVal());
+
+//                //update SurfaceView
+//                if(action.getPlayer() instanceof HumanPlayer){
+//                    ((HumanPlayer) action.getPlayer()).getTopView().invalidate();
+//                    try {
+//                        sleep(1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+
 //
 //                    //if the player did not roll a six but can move a single piece
 //                    if (state.getDiceVal() != 6 && state.getNumMovableTokens(playerID) == 1) {
@@ -173,14 +181,17 @@ public class LudoLocalGame extends LocalGame {
 
 
             //moves piece selected
-            if ( ( action instanceof ActionMoveToken || action instanceof ActionEnableToken ) && state.getNumMovableTokens(playerID) > 0) {
+            if (  action instanceof ActionMoveToken  && state.getNumMovableTokens(playerID) > 0) {
                 //move forward, consider and react to landing on another piece
-                state.advanceToken(playerID, ((ActionMoveToken) action).getIndex());
+              return state.advanceToken(playerID, ((ActionMoveToken) action).getIndex());
             }
+
+            //if made it this far, nothing has caused it to return false, so it probably rolled the dice and was fine
+            return true;
 
         }
         //was true
-        return true; // do nothing since the move was not valid!
+        return false; // do nothing since the move was not valid!
 
     }
 

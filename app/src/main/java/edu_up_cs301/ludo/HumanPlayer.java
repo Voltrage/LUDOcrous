@@ -86,7 +86,6 @@ public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener
 //
 
 
-
     /**
      * constructor
      *
@@ -110,12 +109,10 @@ public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener
 
         //find references
         surfaceView = (LudoSurfaceView) activity.findViewById(R.id.board_canvas);
-        surfaceView.setHasMe(this);
         rollDiceButton = (Button) activity.findViewById(R.id.button_Roll);
         //set the listeners
         surfaceView.setOnTouchListener(this);
         rollDiceButton.setOnClickListener(this);
-
 
     }
 
@@ -140,17 +137,25 @@ public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener
             // if the move was out of turn or otherwise illegal, flash the screen
             surfaceView.flash(Color.RED, 50);
             Log.i("human player", "illegal or not your turn");
-
         }
         else if (!(info instanceof LudoState))
             // if we do not have a LudoState, ignore
             return;
         else {
-            surfaceView.setState((LudoState)info);
             state = (LudoState)info;
+            surfaceView.setState((LudoState)info);
             surfaceView.invalidate();
-//            sleep(300);
             Log.i("human player", "receiving");
+
+            if(state.getWhoseMove()==playerNum){
+                rollDiceButton.setAlpha(1f);
+                rollDiceButton.setClickable(true);
+            } else {
+                rollDiceButton.setAlpha(0.4f);
+                rollDiceButton.setClickable(false);
+            }
+
+
         }
 
     }
@@ -192,7 +197,7 @@ public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener
                         }
                         break;
                     case 2: //is in home stretch
-                        if (surfaceView.getHomeStretchPositions(p, i / 4).contains(event.getX(), event.getY())) {
+                        if (surfaceView.getHomeStretchPositions(p, state.pieces[i].getNumSpacesMoved()-51).contains(event.getX(), event.getY())) {
                             action = new ActionMoveToken(this, i);
                             game.sendAction(action);
                             return true;
@@ -201,6 +206,9 @@ public class HumanPlayer extends GameHumanPlayer implements View.OnClickListener
                     default:
                 }
             }
+
+            //invalid touch
+
         }
         //nothing valid
         return false;

@@ -47,36 +47,38 @@ public class ComputerPlayer extends GameComputerPlayer {
         else {
 
             // sleep to slow down the game
-            sleep(400);
+            sleep(500);
 
-            //if we can use diceVal, make a move
-            if(myState.getIsRollUsable()){
+
+            int index = -1;
+
+            //if we can use diceVal, get index of farthest
+            if(myState.getIsRollUsable()) {
 
                 //if makeMove method didn't take care of action already, then we have to choose
-                    int index = -1;
-                    //get index of my piece that has traveled the farthest, prioritize those out of home base
-                    for (int i = playerNum; i < 16; i += 4) {
-                        if (myState.pieces[i].getIsMovable()) {
-                            index = index < 0 ? i :
-                                    myState.pieces[i].getNumSpacesMoved() + (myState.pieces[i].getTokenState()!=0? 1 : 0)
-                                    >
-                                    myState.pieces[index].getNumSpacesMoved() + (myState.pieces[index].getTokenState()!=0? 1 : 0)?
-                                            i : index;
-                        }
+
+                //get index of my piece that has traveled the farthest, prioritize those out of home base
+                for (int i = playerNum; i < 16; i += 4) {
+                    if (myState.pieces[i].getIsMovable()) {
+                        index = index < 0 ? i :
+                                myState.pieces[i].getNumSpacesMoved() + (myState.pieces[i].getTokenState() != 0 ? 1 : 0)
+                                        >
+                                        myState.pieces[index].getNumSpacesMoved() + (myState.pieces[index].getTokenState() != 0 ? 1 : 0) ?
+                                        i : index;
                     }
-
-//                    //needs to bring out of start
-//                    if (myState.pieces[index].getTokenState() == 0) {
-//                        game.sendAction(new ActionEnableToken(this, index));
-//                        return;
-//                    }
-                    //moves piece already out
-
-                    game.sendAction(new ActionMoveToken(this, index));
+                }
 
             }
+            //if we found a valid index, make the move
+            if(index>=0) {
+                //moves piece
+                Log.i("Computer Player", " " + this.playerNum + " moving piece " + index);
+                game.sendAction(new ActionMoveToken(this, index));
+                return;
+            }
+            // if no moves
             else if(myState.getIsRollable()) {
-                Log.i("Computer Player: " + this.playerNum, "Rolling the dice");
+                Log.i("Computer Player", " " + this.playerNum + " Rolling the dice");
                 game.sendAction(new ActionRollDice(this));
             }
 

@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import edu_up_cs301.game.GamePlayer;
 import edu_up_cs301.game.util.FlashSurfaceView;
 
+import java.util.*;
+
 
 /**
  *
@@ -24,10 +26,10 @@ import edu_up_cs301.game.util.FlashSurfaceView;
 public class LudoSurfaceView extends FlashSurfaceView{
 
     private LudoState state;// = new LudoState();
-    private GamePlayer hasMe;
     private RectF[] boardPositions;
     private RectF[][] startPositions;
     private RectF[][] homeStretchPositions;
+    private ArrayList<TileF> occupiedTiles;
     private float cellWH;
 
     //general
@@ -104,16 +106,22 @@ public class LudoSurfaceView extends FlashSurfaceView{
 
     public LudoSurfaceView(Context context) {
         super(context);
+                occupiedTiles = new ArrayList<>();
         generalInit();
     }
 
     public LudoSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
+                occupiedTiles = new ArrayList<>();
         generalInit();
     }
 
     public void setState(LudoState state) {
         this.state = state;
+
+        occupiedTiles.clear();
+        generateOccupiedArray();
+
     }
 
 
@@ -125,6 +133,10 @@ public class LudoSurfaceView extends FlashSurfaceView{
      */
     private void generalInit() {
         setWillNotDraw(false);
+
+//        occupiedTiles.clear();
+//        generateOccupiedArray();
+
 
         cellWH = this.getWidth()/15f;
 
@@ -168,7 +180,7 @@ public class LudoSurfaceView extends FlashSurfaceView{
                     path[n][0]*(cellWH) + cellWH,
                     path[n][1]*(cellWH) + cellWH );
             //some space
-            boardPositions[n].inset(1f,1f);
+            boardPositions[n].inset(cellWH*.01f, cellWH*.01f);
         }
 
         //define home stretch
@@ -181,7 +193,7 @@ public class LudoSurfaceView extends FlashSurfaceView{
                         homeStrech[n1][n2][0]*(cellWH) + cellWH,
                         homeStrech[n1][n2][1]*(cellWH) + cellWH );
                 //some space
-                homeStretchPositions[n1][n2].inset(1f,1f);
+                homeStretchPositions[n1][n2].inset(cellWH*.01f,cellWH*.01f);
             }
         }
 
@@ -195,7 +207,7 @@ public class LudoSurfaceView extends FlashSurfaceView{
                         startPos[n1][n2][0]*(cellWH) + cellWH,
                         startPos[n1][n2][1]*(cellWH) + cellWH );
                 //some space
-                startPositions[n1][n2].inset(1f,1f);
+                startPositions[n1][n2].inset(cellWH*.01f,cellWH*.01f);
             }
         }
 
@@ -245,37 +257,43 @@ public class LudoSurfaceView extends FlashSurfaceView{
     @Override
     public void onDraw(Canvas canvas) {
 
+        if(state==null){
+            return;
+        }
+
         if(cellWH<=0) {
             //TODO: synchronize so generalInit will only need to be called once, in constructor after width & height are defined
             generalInit();
+            occupiedTiles.clear();
+            generateOccupiedArray();
         }
         canvas.drawRect(this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), blackPaintBor);
-        
 
+
+
+        drawHomeBase(canvas);
+
+
+        //draw board path
         for(int i = 0; i<52 ; i++){
+
+            //draw tile color, typically white
             canvas.drawRect(boardPositions[i],
                     (i == 1 || i == 48) ? redPaintBor :
                             (i == 9 || i == 14) ? greenPaintBor :
                                     (i == 22 || i == 27) ? yellowPaintBor :
                                             (i == 35 || i == 40) ? bluePaintBor : whitePaintBor);
+            //differentiate non-starting safe tiles
             switch(i) {
-//                case 1:
-                case 48:
-                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, whitePaintBor);
-                    break;
-//                case 14:
                 case 9:
-                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, whitePaintBor);
-                    break;
-//                case 27:
                 case 22:
-                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, whitePaintBor);
-                    break;
-//                case 40:
                 case 35:
-                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, whitePaintBor);
+                case 48:
+                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.4f, blackPaintBor);
+                    canvas.drawCircle(boardPositions[i].centerX(), boardPositions[i].centerY(), cellWH*.38f, whitePaintBor);
                     break;
             }
+
         }
 
         for( int p = 0; p < 4; p++){
@@ -396,9 +414,12 @@ public class LudoSurfaceView extends FlashSurfaceView{
 //        drawStar((boxInt * 12), (boxInt * 6), canvas, cellWH);
 //
         //draw all the pieces
+
+
+
         drawPieces(canvas);
 
-            drawDice(canvas); //draw the dice
+        drawDice(canvas);
         }
 
 
@@ -485,37 +506,37 @@ public class LudoSurfaceView extends FlashSurfaceView{
     public void drawDots(float xPos, float yPos, float shift ,int diceVal,Canvas canvas, Paint color){
         switch (diceVal){
             case 1:
-                canvas.drawCircle(xPos+ shift*3,yPos+ shift*3,18,color);
+                canvas.drawCircle(xPos+ shift*3f,yPos+ shift*3f,18f,color);
                 break;
             case 2:
-                canvas.drawCircle(xPos + (float)(shift*2.7), yPos + (float)(shift*2.7),18,color);
-                canvas.drawCircle(xPos + (float)(shift*3.3), yPos + (float)(shift*3.3),18,color);
+                canvas.drawCircle(xPos + (shift*2.7f), yPos + (shift*2.7f),18f,color);
+                canvas.drawCircle(xPos + (shift*3.3f), yPos + (shift*3.3f),18f,color);
                 break;
             case 3:
-                canvas.drawCircle(xPos + (float)(shift*2.7), yPos + (float)(shift*2.7),18,color);
-                canvas.drawCircle(xPos + (float)(shift*3.3), yPos + (float)(shift*3.3),18,color);
-                canvas.drawCircle(xPos + (float)(shift*3), yPos + (float)(shift*3),18,color);
+                canvas.drawCircle(xPos + (shift*2.7f), yPos + (shift*2.7f),18f,color);
+                canvas.drawCircle(xPos + (shift*3.3f), yPos + (shift*3.3f),18f,color);
+                canvas.drawCircle(xPos + (shift*3f), yPos +  (shift*3f),18f,color);
                 break;
             case 4:
-                canvas.drawCircle(xPos + (float)(shift*2.7), yPos + (float)(shift*2.7),15,color);
-                canvas.drawCircle(xPos + (float)(shift*2.7), yPos + (float)(shift*3.3),15,color);
-                canvas.drawCircle(xPos + (float)(shift*3.3), yPos + (float)(shift*2.7),15,color);
-                canvas.drawCircle(xPos + (float)(shift*3.3), yPos + (float)(shift*3.3),15,color);
+                canvas.drawCircle(xPos + (shift*2.7f), yPos + (shift*2.7f),15f,color);
+                canvas.drawCircle(xPos + (shift*2.7f), yPos + (shift*3.3f),15f,color);
+                canvas.drawCircle(xPos + (shift*3.3f), yPos + (shift*2.7f),15f,color);
+                canvas.drawCircle(xPos + (shift*3.3f), yPos + (shift*3.3f),15f,color);
                 break;
             case 5:
-                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*2.6),15,color);
-                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*3.4),15,color);
-                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*2.6),15,color);
-                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*3.4),15,color);
-                canvas.drawCircle(xPos + (float)(shift*3), yPos + (float)(shift*3),15,color);
+                canvas.drawCircle(xPos + (shift*2.6f), yPos + (shift*2.6f),15f,color);
+                canvas.drawCircle(xPos + (shift*2.6f), yPos + (shift*3.4f),15f,color);
+                canvas.drawCircle(xPos + (shift*3.4f), yPos + (shift*2.6f),15f,color);
+                canvas.drawCircle(xPos + (shift*3.4f), yPos + (shift*3.4f),15f,color);
+                canvas.drawCircle(xPos + (shift*3f), yPos + (shift*3f),15f,color);
                 break;
             case 6:
-                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*2.6),15,color);
-                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*3.4),15,color);
-                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*2.6),15,color);
-                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*3.4),15,color);
-                canvas.drawCircle(xPos + (float)(shift*2.6), yPos + (float)(shift*3),15,color);
-                canvas.drawCircle(xPos + (float)(shift*3.4), yPos + (float)(shift*3),15,color);
+                canvas.drawCircle(xPos + (shift*2.6f), yPos + (shift*2.6f),15f,color);
+                canvas.drawCircle(xPos + (shift*2.6f), yPos + (shift*3.4f),15f,color);
+                canvas.drawCircle(xPos + (shift*3.4f), yPos + (shift*2.6f),15f,color);
+                canvas.drawCircle(xPos + (shift*3.4f), yPos + (shift*3.4f),15f,color);
+                canvas.drawCircle(xPos + (shift*2.6f), yPos + (shift*3f),15f,color);
+                canvas.drawCircle(xPos + (shift*3.4f), yPos + (shift*3f),15f,color);
                 break;
             default:
                 break;
@@ -523,48 +544,219 @@ public class LudoSurfaceView extends FlashSurfaceView{
     }
 
 
-    public void drawStartTiles(Canvas canvas,Paint paint,int xShfit, int yShift){
+public void drawHomeBase(Canvas canvas){
 
-        int box1X1=(int)(cellWH*2.3),box1Y1=(int)(cellWH*0.7), box1X2=(int)(cellWH*3.7), box1Y2=(int)(cellWH*2.1);
-        int box2X1=(int)(cellWH*3.9),box2Y1=(int)(cellWH*2.3), box2X2=(int)(cellWH*5.3), box2Y2=(int)(cellWH*3.7);
-        int box3X1=(int)(cellWH*2.3),box3Y1=(int)(cellWH*3.9), box3X2=(int)(cellWH*3.7), box3Y2=(int)(cellWH*5.3);
-        int box4X1=(int)(cellWH*0.7),box4Y1=(int)(cellWH*2.3), box4X2=(int)(cellWH*2.1), box4Y2=(int)(cellWH*3.7);
-        canvas.drawRect(box1X1+xShfit,box1Y1+yShift,box1X2+xShfit,box1Y2+yShift,paint);
-        canvas.drawRect(box2X1+xShfit,box2Y1+yShift,box2X2+xShfit,box2Y2+yShift,paint);
-        canvas.drawRect(box3X1+xShfit,box3Y1+yShift,box3X2+xShfit,box3Y2+yShift,paint);
-        canvas.drawRect(box4X1+xShfit,box4Y1+yShift,box4X2+xShfit,box4Y2+yShift,paint);
+    RectF base = new RectF(0, 0, 6 * cellWH, 6 * cellWH);
+    base.inset(1f,1f);
+
+    RectF gate1 = new RectF(cellWH, 4f*cellWH, 2f*cellWH, base.bottom);
+    RectF gate2 = new RectF(gate1);
+    gate2.inset(0.03f*cellWH,0);
+
+    boolean drawGate = false;
+
+    float center = cellWH*7.5f;
+
+    for (int p = 0; p < 4; p++){ //through each player
+
+        drawGate = state.getDiceVal()==6 && state.getIsRollUsable() && p == state.getWhoseMove();
+
+        canvas.drawRect(base, boardPaint[p]);
+        if(drawGate){
+            canvas.drawRect(gate1, blackPaintBor);
+        }
+        canvas.drawCircle(base.centerX(), base.centerY(), 2.4f*cellWH, blackPaintBor);
+        canvas.drawCircle(base.centerX(), base.centerY(), 2.37f*cellWH, whitePaintBor);
+        if(drawGate){
+            canvas.drawRect(gate2, whitePaintBor);
+        }
+
+//        for (int i = 0; i < 4; i ++) { //through each of their pieces
+//            canvas.drawRect(startPositions[0][i], whitePaintBor);
+//        }
+        canvas.rotate( 90f, center, center);
 
     }
+}
 
     //created by Luke//TODO: fix when it goes to home stretch
     public void drawPieces(Canvas canvas) {
 
         if(state!=null) {
+//
+//
+//            for(int i = 0; i<57 ; i++){
+//                int numColors=0;
+//                int numPieces = 0;
+//                for(int t = 0; t<16; t++){
+//                    if(state.pieces[t].getAdjustedNumSpacesMoved()==i){
+//
+//                    }
+//                }
+//
+//
+//
+//
+//            }
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+////
+////            float scale = 2f/3f;
+////
+//            ArrayList<RectF>[] drawOnThese = new ArrayList[4]; //typically 4p x 4loc
+//            ArrayList<Integer>[][] indexOfOverlap = new ArrayList[4][4];
+//
+//            ArrayList<RectF> draw0 = new ArrayList<>();
+//            ArrayList<RectF> draw1 = new ArrayList<>();
+//            ArrayList<RectF> draw2 = new ArrayList<>();
+//            ArrayList<RectF> draw3 = new ArrayList<>();
+//
+//            ArrayList<Integer> overlapInt = new ArrayList<>();
+//
+//            List<List<Integer>> outer = new ArrayList<List<Integer>>(4);
+//            ArrayList<Integer> inner = new ArrayList<Integer>();
+//
+//            inner.add(100);
+//            inner.add(200);
+//            outer.add(inner); // add first list
+//            inner = new ArrayList<Integer>(inner); // create a new inner list that has the same content as
+//            // the original inner list
+//            outer.add(inner); // add second list
+//
+//            outer.get(0).add(300); // changes only the first inner list
+//
+//
+//
+//
+//            /*
+//             * https://stackoverflow.com/questions/23460367/comparing-elements-of-the-same-array-in-java
+//             */
+//            for(int p = 0; p<4 ; p++) { //for each player
+//
+//
+//                for(int i = 0; i<4 ; i++) { //for each player
+//                    for (int m, k = i + 1; k < 16; k++) { //
+//                        if ((m = state.pieces[i].getAdjustedNumSpacesMoved()) == state.pieces[k].getAdjustedNumSpacesMoved()) {
+//                            switch(state.pieces[i].getTokenState()){
+//                                case 0:
+//                                    drawOnThese.add(startPositions[p][i / 4]);
+//                                    break;
+//                                case 1:
+//                                    drawOnThese.add(boardPositions[m]);
+//                                    break;
+//                                case 2:
+//                                case 3:
+//                                    drawOnThese.add(homeStretchPositions[p][m-51]);
+//                                    break;
+//                            }
+//                            inner.add(i);
+//                        }
+//                    }
+//                    outer.add(i, inner);
+//                }
+//
+//            }
+////            Set<Integer> over = new LinkedHashSet<>(overlapInt);
+//
+//
+//            switch (state.pieces[i].getTokenState()) {
+//                case 0: //is starting in home base
+//                    canvas.drawCircle(startPositions[p][i / 4].centerX(), startPositions[p][i / 4].centerY(), cellWH * .38f, blackPaintBor);
+//                    canvas.drawCircle(startPositions[p][i / 4].centerX(), startPositions[p][i / 4].centerY(), cellWH * .35f, tokenPaint[p]);
+//                    break;
+//                case 1: //is en route
+//                    int indexInBoard = state.pieces[i].getAdjustedNumSpacesMoved();
+//                    canvas.drawCircle(boardPositions[indexInBoard].centerX(), boardPositions[indexInBoard].centerY(), cellWH * .38f, blackPaintBor);
+//                    canvas.drawCircle(boardPositions[indexInBoard].centerX(), boardPositions[indexInBoard].centerY(), cellWH * .35f, tokenPaint[p]);
+//                    break;
+//                case 2: //is in home stretch
+//                case 3: //is in last index of home stretch
+//                    int indexInHomeStretch = state.pieces[i].getNumSpacesMoved() - 51;
+//                    canvas.drawCircle(homeStretchPositions[p][indexInHomeStretch].centerX(), homeStretchPositions[p][indexInHomeStretch].centerY(), cellWH * .38f, blackPaintBor);
+//                    canvas.drawCircle(homeStretchPositions[p][indexInHomeStretch].centerX(), homeStretchPositions[p][indexInHomeStretch].centerY(), cellWH * .35f, tokenPaint[p]);
+//                    break;
+//            }
 
-            for (int p, r = 0; r < 4; r++) { //through each player
-                p = ~(state.getWhoseMove()+r) & 3;
-                for (int i = p; i < 16; i += 4) { //through each of their pieces
 
-                    switch (state.pieces[i].getTokenState()) {
-                        case 0: //is starting in home base
-                            canvas.drawCircle(startPositions[p][i / 4].centerX(), startPositions[p][i / 4].centerY(), cellWH * .37f, blackPaintBor);
-                            canvas.drawCircle(startPositions[p][i / 4].centerX(), startPositions[p][i / 4].centerY(), cellWH * .35f, tokenPaint[p]);
-                            break;
-                        case 1: //is en route
-                            int indexInBoard = state.pieces[i].getAdjustedNumSpacesMoved();
-                            canvas.drawCircle(boardPositions[indexInBoard].centerX(), boardPositions[indexInBoard].centerY(), cellWH * .37f, blackPaintBor);
-                            canvas.drawCircle(boardPositions[indexInBoard].centerX(), boardPositions[indexInBoard].centerY(), cellWH * .35f, tokenPaint[p]);
-                            break;
-                        case 2: //is in home stretch
-                            canvas.drawCircle(homeStretchPositions[p][i / 4].centerX(), homeStretchPositions[p][i / 4].centerY(), cellWH * .37f, blackPaintBor);
-                            canvas.drawCircle(homeStretchPositions[p][i / 4].centerX(), homeStretchPositions[p][i / 4].centerY(), cellWH * .35f, tokenPaint[p]);
-                            break;
-                        default:
+            //draw the array we created when we were passed the most recent state
+            for(TileF k : occupiedTiles){
+
+
+                int total = k.sum();
+
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 0; j < k.onMe[i]; j++) {
+
+                        canvas.drawCircle(k.centerX(), k.centerY(), cellWH * .38f, blackPaintBor);
+                        canvas.drawCircle(k.centerX(), k.centerY(), cellWH * .35f, tokenPaint[i]);
+
                     }
                 }
             }
+
+
         }
     }
+
+
+
+private void generateOccupiedArray(){
+
+        for (int p, r = 0; r < 4; r++) { //through each player
+            p = ~(state.getWhoseMove() + r) & 3; //reverse order so we draw current player last
+            for (int i = p; i < 16; i += 4) { //through each of their pieces
+
+                boolean added = false;
+
+                switch (state.pieces[i].getTokenState()) {
+                    case 0: //is starting in home base
+                        occupiedTiles.add(new TileF(startPositions[p][i / 4], state.pieces[i].getOwner()));
+                        break;
+                    case 1: //is en route
+                        int indexInBoard = state.pieces[i].getAdjustedNumSpacesMoved();
+                        //if location has already been recorded, add it to that tile
+                        for (TileF k : occupiedTiles){
+                            if(k.contains(boardPositions[indexInBoard])){
+                                k.add(state.pieces[i].getOwner());
+                                added = true;
+                                break;
+                            }
+                        }
+                        if( ! added)
+                            occupiedTiles.add(new TileF(boardPositions[indexInBoard], state.pieces[i].getOwner()));
+                        break;
+                    case 2: //is in home stretch
+                    case 3: //is in last index of home stretch
+                        int indexInHomeStretch = state.pieces[i].getNumSpacesMoved() - 51;
+                        //if location has already been recorded, add it to that tile
+                        for (TileF k : occupiedTiles){
+                            if(k.contains(homeStretchPositions[p][indexInHomeStretch])){
+                                k.add(state.pieces[i].getOwner());
+                                added = true;
+                                break;
+                            }
+                        }
+                        if( ! added)
+                            occupiedTiles.add(new TileF(new RectF(homeStretchPositions[p][indexInHomeStretch]), state.pieces[i].getOwner()));
+                        break;
+                }
+            }
+        }
+
+
+    }
+
+
 
 
     /**
@@ -588,11 +780,6 @@ public class LudoSurfaceView extends FlashSurfaceView{
     public RectF getHomeStretchPositions(int player, int piece) {
         return homeStretchPositions[player][piece];
     }
-
-    public void setHasMe(GamePlayer hasMe) {
-        this.hasMe = hasMe;
-    }
-
 
 
 }
